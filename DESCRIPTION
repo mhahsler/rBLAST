@@ -1,6 +1,6 @@
 Package: rBLAST
-Title: Interface to BLAST search
-Description: Seamlessly interfaces the BLAST genetic sequence data base search.
+Title: Interface to the Basic Local Alignment Search Tool (BLAST)
+Description: Seamlessly interfaces the Basic Local Alignment Search Tool (BLAST) to search genetic sequence data bases. This work was partially supported by grant no. R21HG005912 from the National Human Genome Research Institute.
 Version: 0.99.1
 Date: 2015-xx-xx
 Author: Michael Hahsler, Anurag Nagar
