@@ -1,0 +1,13 @@
+Package: rBLAST
+Title: Interface to BLAST search
+Description: Seamlessly interfaces the BLAST genetic sequence data base search.
+Version: 0.99.1
+Date: 2015-xx-xx
+Author: Michael Hahsler, Anurag Nagar
+Maintainer: Michael Hahsler <mhahsler@lyle.smu.edu>
+biocViews: Genetics, Sequencing, Infrastructure,
+        Classification
+Depends: Biostrings (>= 2.26.2)
+SystemRequirements: ncbi-blast+
+License: GPL-3
+

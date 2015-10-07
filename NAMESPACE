@@ -1,0 +1,10 @@
+import(Biostrings)
+
+export(
+	### BLAST
+	blast,
+	blast_help
+  )
+
+S3method(print, BLAST)
+S3method(predict, BLAST)

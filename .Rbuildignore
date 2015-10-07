@@ -1,0 +1,6 @@
+.svn
+TODO
+Work
+LICENSE
+^.*\.Rproj$
+^\.Rproj\.user$
