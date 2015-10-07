@@ -26,17 +26,24 @@ blast_help()
   \item{...}{ additional arguments are ignored.}
 }
 \details{
-    The blast+ software has to be installed and
-    be executable by the system. Try \code{Sys.which("blastn")} to
-    see if the program is properly installed.
-
-    For Linux (Debian/Ubuntu) install package: ncbi-blast+
-    For Windows or OS X you can find the software at
+The blast+ software has to be installed:
+\itemize{
+    \item{For Linux (Debian/Ubuntu)}{install package: ncbi-blast+}
+    \item{For Windows or OS X} install the software from
     \url{ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/}.
+}
 
-    Also a database is needed. NCBI BLAST databases are updated daily
-    and may be downloaded via FTP
-    from \url{ftp://ftp.ncbi.nlm.nih.gov/blast/db/}.
+R needs to be able to find the executable (mostly an issue with Windows).
+Try \code{Sys.which("blastn")} to see if the program is properly installed.
+If not, then you probably need to set the environment variable called PATH
+using something like
+\code{Sys.setenv(PATH = paste(Sys.getenv("PATH"), "path_to_BLAST", sep=":"))}.
+You can use Sys.getenv("PATH") first to see what is currently in the
+search path.
+
+You will also need a database. NCBI BLAST databases are updated daily
+and may be downloaded via FTP
+from \url{ftp://ftp.ncbi.nlm.nih.gov/blast/db/}.
 }
 \value{
 \code{blast()} returns a blast database object which can be used for queries
