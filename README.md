@@ -1,6 +1,7 @@
 # rBLAST - Interface for BLAST search (R-Package)
 
 [![Travis-CI Build Status](https://travis-ci.org/mhahsler/rBLAST.svg?branch=master)](https://travis-ci.org/mhahsler/rBLAST)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/mhahsler/rBLAST?branch=master&svg=true)](https://ci.appveyor.com/project/mhahsler/rBLAST)
 
 Interfaces the Basic Local Alignment Search Tool (BLAST) to search genetic sequence data bases with the Bioconductor infrastructure. 
 The BLAST software needs to be downloaded and installed separately.
