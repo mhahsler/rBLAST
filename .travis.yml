@@ -13,7 +13,6 @@ r_packages:
 
 bioc_packages:
   - Biostrings
-  - seqLogo
 
 after_success:
   - Rscript -e 'covr::codecov()'
