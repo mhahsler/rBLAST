@@ -1,6 +1,12 @@
-.svn
-TODO
-Work
-LICENSE
-^.*\.Rproj$
+proj$
 ^\.Rproj\.user$
+^\.travis\.yml$
+^NEWS\.md$
+^cran-comments\.md$
+^appveyor\.yml$
+^revdep$
+^.*\.o$
+^.*\.Rproj$
+^LICENSE
+Work
+vignettes_real

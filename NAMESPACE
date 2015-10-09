@@ -1,4 +1,5 @@
 import(Biostrings)
+importFrom("utils", "read.table")
 
 export(
 	### BLAST
