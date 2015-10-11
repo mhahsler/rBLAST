@@ -14,7 +14,7 @@ The BLAST software needs to be downloaded and installed separately.
 * Install the BLAST software by following the instructions found in `? blast`
 
 ## Example
-```
+```R
 ## download the 16S Microbial data base from NCBI
 R> download.file("ftp://ftp.ncbi.nlm.nih.gov/blast/db/16SMicrobial.tar.gz",
 +     "16SMicrobial.tar.gz", mode='wb')
