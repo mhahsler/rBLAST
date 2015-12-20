@@ -41,7 +41,8 @@ blast_help <- function() {
 }
 
 
-predict.BLAST <- function(object, newdata, BLAST_args="", ...) {
+predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
+  ...) {
 
   db <- object$db
   x <- newdata
@@ -51,6 +52,7 @@ predict.BLAST <- function(object, newdata, BLAST_args="", ...) {
   dir <- getwd()
   temp_file <- basename(tempfile(tmpdir = wd))
   on.exit({
+    #cat(temp_file, "\n")
     file.remove(Sys.glob(paste(temp_file, "*", sep="")))
     setwd(dir)
   })
@@ -62,13 +64,18 @@ predict.BLAST <- function(object, newdata, BLAST_args="", ...) {
   writeXStringSet(x, infile, append=FALSE, format="fasta")
 
   system(paste(.findExecutable("blastn"), "-db", db,
-    "-query", infile, "-out", outfile, "-outfmt 6", BLAST_args))
+    "-query", infile, "-out", outfile, '-outfmt "10', custom_format,
+    '"', BLAST_args))
 
   ## read and parse rdp output
-  cl_tab <- read.table(outfile)
-  colnames(cl_tab) <- c( "QueryID",  "SubjectID", "Perc.Ident",
-    "Alignment.Length", "Mismatches", "Gap.Openings", "Q.start", "Q.end",
-    "S.start", "S.end", "E", "Bits" )
+  cl_tab <- read.table(outfile, sep=",")
+  if(custom_format == "") {
+    colnames(cl_tab) <- c( "QueryID",  "SubjectID", "Perc.Ident",
+      "Alignment.Length", "Mismatches", "Gap.Openings", "Q.start", "Q.end",
+      "S.start", "S.end", "E", "Bits" )
+  }else{
+    colnames(cl_tab) <- unlist(strsplit(custom_format, split = " +"))
+  }
 
   cl_tab
 }

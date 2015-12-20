@@ -9,5 +9,6 @@ biocViews: Genetics, Sequencing, Infrastructure,
         Classification
 Depends: Biostrings (>= 2.26.2)
 SystemRequirements: ncbi-blast+
+BugReports: https://github.com/mhahsler/rBLAST/issues
 License: GPL-3
 

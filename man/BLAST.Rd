@@ -13,7 +13,7 @@ Execute blastn from blast+.
 blast(db=NULL)
 blast_help()
 \method{predict}{BLAST}(object, newdata,
-        BLAST_args="",  ...)
+        BLAST_args="", custom_format="", ...)
 \method{print}{BLAST}(x, info=TRUE, ...)
 }
 \arguments{
@@ -21,6 +21,7 @@ blast_help()
   \item{object, x}{ A BLAST object. }
   \item{newdata}{ the query as an object of class XStringSet.}
   \item{BLAST_args}{ additional arguments in command-line style.}
+  \item{custom_format}{ custom format specified by space delimited format specifiers. }
   \item{info}{ print information about the database (needs blastdbcmd
   in the path).}
   \item{...}{ additional arguments are ignored.}
@@ -82,6 +83,10 @@ print(bl, info=TRUE)
 
 ## query a sequence using BLAST
 cl <- predict(bl, seq[1,])
+cl[1:5,]
+
+## custom format (see BLAST documentation)
+cl <- predict(bl, seq[1,], custom_format = "qseqid bitscore length")
 cl[1:5,]
 }
 }
