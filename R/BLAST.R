@@ -74,7 +74,9 @@ predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
       "Alignment.Length", "Mismatches", "Gap.Openings", "Q.start", "Q.end",
       "S.start", "S.end", "E", "Bits" )
   }else{
-    colnames(cl_tab) <- unlist(strsplit(custom_format, split = " +"))
+    c_names <- unlist(strsplit(custom_format, split = " +"))
+    if(ncol(cl_tab) != length(c_names)) stop("Problem with custom_format!")
+    colnames(cl_tab) <- c_names
   }
 
   cl_tab
