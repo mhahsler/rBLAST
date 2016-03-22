@@ -67,17 +67,23 @@ predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
     "-query", infile, "-out", outfile, '-outfmt "10', custom_format,
     '"', BLAST_args))
 
-  ## read and parse rdp output
-  cl_tab <- read.table(outfile, sep=",")
+  ## rdp output column names
   if(custom_format == "") {
-    colnames(cl_tab) <- c( "QueryID",  "SubjectID", "Perc.Ident",
+    c_names <- c("QueryID",  "SubjectID", "Perc.Ident",
       "Alignment.Length", "Mismatches", "Gap.Openings", "Q.start", "Q.end",
       "S.start", "S.end", "E", "Bits" )
   }else{
     c_names <- unlist(strsplit(custom_format, split = " +"))
-    if(ncol(cl_tab) != length(c_names)) stop("Problem with custom_format!")
-    colnames(cl_tab) <- c_names
   }
+
+  ## read and parse rdp output
+  if(is(try(cl_tab <- read.table(outfile, sep=","), silent=TRUE), "try-error")) {
+    warning("BLAST did not return a match!")
+    cl_tab <- data.frame(matrix(ncol=length(c_names), nrow=0))
+  }
+
+  if(ncol(cl_tab) != length(c_names)) stop("Problem with format (e.g., custom_format)!")
+  colnames(cl_tab) <- c_names
 
   cl_tab
 }
