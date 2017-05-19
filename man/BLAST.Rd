@@ -10,14 +10,15 @@ Basic Local Alignment Search Tool (BLAST)
 Execute blastn from blast+.
 }
 \usage{
-blast(db=NULL)
-blast_help()
+blast(db=NULL, type = "blastn")
+blast_help(type = "blastn")
 \method{predict}{BLAST}(object, newdata,
         BLAST_args="", custom_format="", ...)
 \method{print}{BLAST}(x, info=TRUE, ...)
 }
 \arguments{
   \item{db}{ the database file to be searched (without file extension).}
+  \item{type}{ BLAST program to use (e.g., blastn, blastp, blastx).}
   \item{object, x}{ A BLAST object. }
   \item{newdata}{ the query as an object of class XStringSet.}
   \item{BLAST_args}{ additional arguments in command-line style.}

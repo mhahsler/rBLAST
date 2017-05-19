@@ -16,16 +16,20 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-blast  <- function(db = NULL) {
+blast  <- function(db = NULL, type = "blastn") {
   if(is.null(db)) stop("No BLAST database specified!")
   db <- file.path(normalizePath(dirname(db)), basename(db))
   if(length(Sys.glob(paste(db, "*", sep="")))<1) stop("BLAST database does not exit!")
 
-  structure(list(db = db), class="BLAST")
+  ### check if executable is available
+  .findExecutable(type)
+
+  structure(list(db = db, type = type), class="BLAST")
 }
 
 print.BLAST <- function(x, info=TRUE, ...) {
   cat("BLAST Database\nLocation:", x$db, "\n")
+  cat("BLAST Type:", x$type, "\n")
 
   if(info) {
     out <- system(paste(.findExecutable("blastdbcmd"), "-db", x$db,
@@ -35,9 +39,8 @@ print.BLAST <- function(x, info=TRUE, ...) {
   }
 }
 
-blast_help <- function() {
-  system(paste(.findExecutable(c("blastn")),
-    "-help"))
+blast_help <- function(type = "blastn") {
+  system(paste(.findExecutable(c(type)), "-help"))
 }
 
 
@@ -45,6 +48,7 @@ predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
   ...) {
 
   db <- object$db
+  exe <- object$type
   x <- newdata
 
   ## get temp files and change working directory
@@ -63,7 +67,7 @@ predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
 
   writeXStringSet(x, infile, append=FALSE, format="fasta")
 
-  system(paste(.findExecutable("blastn"), "-db", db,
+  system(paste(.findExecutable(exe), "-db", db,
     "-query", infile, "-out", outfile, '-outfmt "10', custom_format,
     '"', BLAST_args))
 
