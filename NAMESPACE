@@ -4,6 +4,7 @@ importFrom("utils", "read.table")
 export(
 	### BLAST
 	blast,
+  makeblastdb,
 	blast_help
   )
 
