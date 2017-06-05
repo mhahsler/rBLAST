@@ -24,6 +24,11 @@ blast  <- function(db = NULL, type = "blastn") {
   ### check if executable is available
   .findExecutable(type)
 
+  ### check database
+  status <- try(system(paste(.findExecutable("blastdbcmd"), "-db", db,
+      "-info"), ignore.stdout = TRUE, ignore.stderr = FALSE))
+  if(status != 0) stop("Problem loading the database.")
+
   structure(list(db = db, type = type), class="BLAST")
 }
 
