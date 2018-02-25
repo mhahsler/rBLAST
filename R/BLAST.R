@@ -86,7 +86,7 @@ predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
   }
 
   ## read and parse rdp output
-  if(is(try(cl_tab <- read.table(outfile, sep=","), silent=TRUE), "try-error")) {
+  if(is(try(cl_tab <- read.table(outfile, sep=",", quote = ""), silent=TRUE), "try-error")) {
     warning("BLAST did not return a match!")
     cl_tab <- data.frame(matrix(ncol=length(c_names), nrow=0))
   }
