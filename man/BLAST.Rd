@@ -39,7 +39,7 @@ R needs to be able to find the executable (mostly an issue with Windows).
 Try \code{Sys.which("blastn")} to see if the program is properly installed.
 If not, then you probably need to set the environment variable called PATH
 using something like
-\code{Sys.setenv(PATH = paste(Sys.getenv("PATH"), "path_to_BLAST", sep=":"))}.
+\code{Sys.setenv(PATH = paste(Sys.getenv("PATH"), "path_to_BLAST", sep= .Platform$path.sep))}.
 You can use Sys.getenv("PATH") first to see what is currently in the
 search path.
 
