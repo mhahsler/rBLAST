@@ -17,8 +17,8 @@ The BLAST software needs to be downloaded and installed separately.
 ## Usage
 ```R
 ## download the 16S Microbial data base from NCBI
-R> download.file("ftp://ftp.ncbi.nlm.nih.gov/blast/db/16SMicrobial.tar.gz",
-+     "16SMicrobial.tar.gz", mode='wb')
+download.file("ftp://ftp.ncbi.nlm.nih.gov/blast/db/16SMicrobial.tar.gz",
+    "16SMicrobial.tar.gz", mode='wb')
 ```
 ```
 trying URL 'ftp://ftp.ncbi.nlm.nih.gov/blast/db/16SMicrobial.tar.gz'
@@ -28,12 +28,12 @@ downloaded 4.0 MB
 ```
 
 ```R
-R> untar("16SMicrobial.tar.gz", exdir="16SMicrobialDB")
+untar("16SMicrobial.tar.gz", exdir="16SMicrobialDB")
 
 ## load some test data 
-R> seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-+     package="rBLAST"))
-R> seq
+seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+                        package="rBLAST"))
+seq
 ```
 
 ```
@@ -48,8 +48,8 @@ R> seq
 
 ```R
 ## load a BLAST database (replace db with the location + name of the BLAST DB)
-R> bl <- blast(db="./16SMicrobialDB/16SMicrobial")
-R> bl
+bl <- blast(db="./16SMicrobialDB/16SMicrobial")
+bl
 ```
 
 ```
@@ -66,8 +66,8 @@ Volumes:
 
 ```R
 ## query a sequence using BLAST
-R> cl <- predict(bl, seq[1,])
-R> cl[1:5,]
+cl <- predict(bl, seq[1,])
+cl[1:5,]
 ```
 
 ```
