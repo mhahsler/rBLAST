@@ -10,7 +10,7 @@ Call the makeblastdb utility to create a BLAST database from a FASTA file.
 makeblastdb(file, dbtype = "nucl", args="")
 }
 \arguments{
-  \item{file}{ input file/database name.}
+  \item{file}{ input file/database name. \bold{Note} that the filename and path cannot contain whitespaces. }
   \item{dbtype}{ molecule type of target db (\code{"nucl"} or \code{"prot"}).}
   \item{args}{ string including all further arguments passed on to makeblastdb. }
 }
