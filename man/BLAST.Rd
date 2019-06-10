@@ -64,6 +64,9 @@ BLAST+ \url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&
 ## check if blastn is correctly installed
 Sys.which("blastn")
 
+## check version you should have version 1.8.1+
+system("blastn -version")
+
 ## download the 16S Microbial data base from NCBI
 download.file("ftp://ftp.ncbi.nlm.nih.gov/blast/db/16SMicrobial.tar.gz",
   "16SMicrobial.tar.gz", mode='wb')
