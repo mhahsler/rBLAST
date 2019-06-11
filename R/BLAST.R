@@ -19,15 +19,15 @@
 blast  <- function(db = NULL, type = "blastn") {
   if(is.null(db)) stop("No BLAST database specified!")
   db <- file.path(normalizePath(dirname(db)), basename(db))
-  if(length(Sys.glob(paste(db, "*", sep="")))<1) stop("BLAST database does not exit!")
+  if(length(Sys.glob(paste(db, "*", sep="")))<1) stop("BLAST database does not exit! (tried to open: ", db,")")
 
   ### check if executable is available
   .findExecutable(type)
 
   ### check database
-  status <- try(system(paste(.findExecutable("blastdbcmd"), "-db", db,
-      "-info"), ignore.stdout = TRUE, ignore.stderr = FALSE))
-  if(status != 0) stop("Problem loading the database.")
+  cmd <- paste(.findExecutable("blastdbcmd"), "-db", db, "-info")
+  status <- try(system(cmd, ignore.stdout = TRUE, ignore.stderr = FALSE))
+  if(status != 0) stop("Problem loading the database! (trying to execute: ", cmd,")")
 
   structure(list(db = db, type = type), class="BLAST")
 }
