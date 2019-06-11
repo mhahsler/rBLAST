@@ -21,6 +21,9 @@ blast  <- function(db = NULL, type = "blastn") {
   db <- file.path(normalizePath(dirname(db)), basename(db))
   if(length(Sys.glob(paste(db, "*", sep="")))<1) stop("BLAST database does not exit! (tried to open: ", db,")")
 
+  ### check for spaces
+  if(length(grep(" ", db)) > 0) stop("Database name or path contains spaced. rename or move database to remove spaces (current path: ", db,")")
+
   ### check if executable is available
   .findExecutable(type)
 
