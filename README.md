@@ -9,10 +9,12 @@ The BLAST software needs to be downloaded and installed separately.
 
 ## Installation
 
-* Install [Bioconductor](http://www.bioconductor.org/install/) and the Bioconductor package
-`Biostrings`.
-* Download and install the package from [AppVeyor](https://ci.appveyor.com/project/mhahsler/rBLAST/build/artifacts) or install via `install_github("mhahsler/rBLAST")` (requires the R package `devtools`) 
-* Install the BLAST software by following the instructions found in `? blast`
+1. Install the package `devtools`.
+2. Install the Bioconductor package `Biostrings` either using
+`devtools::install_bioc("Biostrings")` or directly from
+[Bioconductor](http://www.bioconductor.org/install/).
+3. Install `rBlast` from GitHub using `devtools::install_github("mhahsler/rBLAST")`.
+4. Install the BLAST software by following the instructions found in `? blast`
 
 ## Usage
 ```R
