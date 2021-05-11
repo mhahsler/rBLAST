@@ -32,7 +32,7 @@ The blast+ software has to be installed:
 \itemize{
     \item{For Linux (Debian/Ubuntu)}{install package: ncbi-blast+}
     \item{For Windows or OS X} install the software from
-    \url{ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/}.
+    \url{https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/}.
 }
 
 R needs to be able to find the executable (mostly an issue with Windows).
@@ -45,7 +45,7 @@ search path.
 
 You will also need a database. NCBI BLAST databases are updated daily
 and may be downloaded via FTP
-from \url{ftp://ftp.ncbi.nlm.nih.gov/blast/db/}.
+from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 }
 \value{
 \code{blast()} returns a blast database object which can be used for queries
@@ -67,23 +67,26 @@ Sys.which("blastn")
 ## check version you should have version 1.8.1+
 system("blastn -version")
 
-## download the 16S Microbial data base from NCBI
-download.file("ftp://ftp.ncbi.nlm.nih.gov/blast/db/16SMicrobial.tar.gz",
-  "16SMicrobial.tar.gz", mode='wb')
-untar("16SMicrobial.tar.gz", exdir="16SMicrobialDB")
+## download the 16S Microbial rRNA data base from NCBI
+download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
+  "16S_ribosomal_RNA.tar.gz", mode='wb')
+untar("16S_ribosomal_RNA.tar.gz", exdir="16S_rRNA_DB")
 
+## load a BLAST database (replace db with the location + name of the BLAST DB
+## without the extension)
+list.files("./16S_rRNA_DB/")
+bl <- blast(db="./16S_rRNA_DB/16S_ribosomal_RNA")
+bl
+
+print(bl, info=TRUE)
+
+## read example sequence to BLAST
 seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
 	package="rBLAST"))
 
 ## shorten names
 names(seq) <-  sapply(strsplit(names(seq), " "), "[", 1)
 seq
-
-## load a BLAST database (replace db with the location + name of the BLAST DB)
-bl <- blast(db="./16SMicrobialDB/16SMicrobial")
-bl
-
-print(bl, info=TRUE)
 
 ## query a sequence using BLAST
 cl <- predict(bl, seq[1,])
