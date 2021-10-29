@@ -1,0 +1,42 @@
+require (rBLAST)
+# Take bacteria ID as an example. 
+
+download.file("ftp://ftp.ncbi.nlm.nih.gov/refseq/TargetedLoci/Bacteria/bacteria.16SrRNA.fna.gz")
+untar("bacteria.16SrRNA.fna.gz", exdir="C:/Users/user/Documents/16SMicrobialDB/")
+
+#Creat database
+
+IDdb<-function(dbfile)
+{makeblastdb(dbfile)
+  S<-blast(dbfile)
+  assign("Species",S,envir = .GlobalEnv)}
+dbfile<-"C:/Users/user/Documents/16SMicrobialDB/bacteria.16SrRNA.fna"
+
+
+#read contigs for ID
+
+Read<-function(datapath,pattern)
+{X<-list.files(datapath,pattern,full.names=T)
+Data<-lapply(X,readDNAStringSet,use.names=T)
+assign("Data",Data,envir = .GlobalEnv)}
+datapath<-""
+pattern<-".fasta"
+
+#ID result as IDlist, indentity must between 0 to 100 as percentage of indentity cutoff. covleng must be between 0-1, as the length coverage of 16s reference.
+
+ID<-function(data,indentity,covleng)
+{
+  E<-NULL
+for ( i in 1:length(data))
+{D<-predict(Species,data[[i]],BLAST_args = (paste0(" -max_target_seqs 1 -perc_identity ",indentity)),
+            custom_format = "qseqid sseqid pident length slen mismatch gaps evalue \t stitle")
+D<-subset(D,D$length/D$slen>covleng)
+if (length(D$qseqid)==0)
+{D<-NULL}else{
+  row.names(D)[1:length(D$qseqid)]<-names(data)[i]}
+E<-rbind(E,D)}
+  assign("IDlist",E,envir = .GlobalEnv) }
+
+ID(Data,90,0.8)
+  
+  
