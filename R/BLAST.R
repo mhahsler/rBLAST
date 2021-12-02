@@ -19,7 +19,7 @@
 blast  <- function(db = NULL, type = "blastn") {
   if(is.null(db)) stop("No BLAST database specified!")
   db <- file.path(normalizePath(dirname(db)), basename(db))
-  if(length(Sys.glob(paste(db, "*", sep="")))<1) stop("BLAST database does not exit! (tried to open: ", db,")")
+  if(length(Sys.glob(paste(db, "*", sep="")))<1) stop("BLAST database does not exist! (tried to open: ", db,")")
 
   ### check for spaces
   if(length(grep(" ", db)) > 0) stop("Database name or path contains spaced. rename or move database to remove spaces (current path: ", db,")")
