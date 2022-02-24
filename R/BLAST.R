@@ -28,9 +28,8 @@ blast  <- function(db = NULL, type = "blastn") {
   .findExecutable(type)
 
   ### check database
-  cmd <- paste(.findExecutable("blastdbcmd"), "-db", db, "-info")
-  status <- try(system(cmd, ignore.stdout = TRUE, ignore.stderr = FALSE))
-  if(status != 0) stop("Problem loading the database! (trying to execute: ", cmd,")")
+  status <- try(system2(.findExecutable("blastdbcmd"), args = c("-db", db, "-info"), stdout = FALSE))
+  if(status != 0) stop("Problem loading the database! (trying to execute: blastdbcmd)")
 
   structure(list(db = db, type = type), class="BLAST")
 }
@@ -40,15 +39,16 @@ print.BLAST <- function(x, info=TRUE, ...) {
   cat("BLAST Type:", x$type, "\n")
 
   if(info) {
-    out <- system(paste(.findExecutable("blastdbcmd"), "-db", x$db,
-      "-info"), intern=TRUE)
+    out <- system2(.findExecutable("blastdbcmd"), args = c("-db", x$db,
+      "-info"), stdout = TRUE)
     cat(paste(out, collapse="\n"))
     cat("\n")
   }
 }
 
+
 blast_help <- function(type = "blastn") {
-  system(paste(.findExecutable(c(type)), "-help"))
+  system2(.findExecutable(c(type)), args = c("-help"))
 }
 
 
@@ -75,7 +75,7 @@ predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
 
   writeXStringSet(x, infile, append=FALSE, format="fasta")
 
-  system(paste(.findExecutable(exe), "-db", db,
+  system2(command = .findExecutable(exe), args = c("-db", db,
     "-query", infile, "-out", outfile, '-outfmt "10', custom_format,
     '"', BLAST_args))
 
@@ -88,8 +88,8 @@ predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
     c_names <- unlist(strsplit(custom_format, split = " +"))
   }
 
-  ## read and parse rdp output
-  if(is(try(cl_tab <- read.table(outfile, sep=",", quote = ""), silent=TRUE), "try-error")) {
+  ## read and parse BLAST output
+  if(is(try(cl_tab <- read.table(outfile, sep=",", quote = ""), silent = FALSE), "try-error")) {
     warning("BLAST did not return a match!")
     cl_tab <- data.frame(matrix(ncol=length(c_names), nrow=0))
   }
@@ -99,7 +99,3 @@ predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
 
   cl_tab
 }
-
-
-
-
