@@ -52,7 +52,7 @@ blast_help <- function(type = "blastn") {
 }
 
 
-predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
+predict.BLAST <- function(object, newdata, silent=FALSE, BLAST_args="", custom_format ="",
   ...) {
 
   db <- object$db
@@ -89,7 +89,7 @@ predict.BLAST <- function(object, newdata, BLAST_args="", custom_format ="",
   }
 
   ## read and parse BLAST output
-  if(is(try(cl_tab <- read.table(outfile, sep=",", quote = ""), silent = FALSE), "try-error")) {
+  if(is(try(cl_tab <- read.table(outfile, sep=",", quote = ""), silent = silent), "try-error")) {
     warning("BLAST did not return a match!")
     cl_tab <- data.frame(matrix(ncol=length(c_names), nrow=0))
   }
