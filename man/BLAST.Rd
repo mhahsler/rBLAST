@@ -12,7 +12,7 @@ Execute blastn from blast+.
 \usage{
 blast(db=NULL, type = "blastn")
 blast_help(type = "blastn")
-\method{predict}{BLAST}(object, newdata,
+\method{predict}{BLAST}(object, newdata, silent=FALSE,
         BLAST_args="", custom_format="", ...)
 \method{print}{BLAST}(x, info=TRUE, ...)
 }
@@ -21,6 +21,7 @@ blast_help(type = "blastn")
   \item{type}{ BLAST program to use (e.g., blastn, blastp, blastx).}
   \item{object, x}{ A BLAST object. }
   \item{newdata}{ the query as an object of class XStringSet.}
+  \item{silent}{ should the BLAST output be read in silently? }
   \item{BLAST_args}{ additional arguments in command-line style.}
   \item{custom_format}{ custom format specified by space delimited format specifiers. }
   \item{info}{ print information about the database (needs blastdbcmd
