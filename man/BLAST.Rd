@@ -10,11 +10,11 @@ Basic Local Alignment Search Tool (BLAST)
 Execute blastn from blast+.
 }
 \usage{
-blast(db=NULL, type = "blastn")
+blast(db = NULL, type = "blastn")
 blast_help(type = "blastn")
-\method{predict}{BLAST}(object, newdata, silent=FALSE,
-        BLAST_args="", custom_format="", ...)
-\method{print}{BLAST}(x, info=TRUE, ...)
+\method{predict}{BLAST}(object, newdata, silent = FALSE,
+        BLAST_args = "", custom_format = "", ...)
+\method{print}{BLAST}(x, info = TRUE, ...)
 }
 \arguments{
   \item{db}{ the database file to be searched (without file extension).}
