@@ -69,33 +69,34 @@ Sys.which("blastn")
 system("blastn -version")
 
 ## download the 16S Microbial rRNA data base from NCBI
-download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
-  "16S_ribosomal_RNA.tar.gz", mode='wb')
-untar("16S_ribosomal_RNA.tar.gz", exdir="16S_rRNA_DB")
+if (!file.exists("16S_rRNA_DB")) {
+  download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
+    "16S_ribosomal_RNA.tar.gz", mode = 'wb')
+  untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
+}
 
 ## load a BLAST database (replace db with the location + name of the BLAST DB
 ## without the extension)
 list.files("./16S_rRNA_DB/")
-bl <- blast(db="./16S_rRNA_DB/16S_ribosomal_RNA")
+bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
 bl
 
-print(bl, info=TRUE)
+print(bl, info = TRUE)
 
-## read example sequence to BLAST
+## read a single example sequence to BLAST
 seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-	package="rBLAST"))
-
-## shorten names
-names(seq) <-  sapply(strsplit(names(seq), " "), "[", 1)
+	package = "rBLAST"))[1]
 seq
-
+n
 ## query a sequence using BLAST
-cl <- predict(bl, seq[1,])
+cl <- predict(bl, seq)
 cl[1:5,]
 
-## custom format (see BLAST documentation)
-cl <- predict(bl, seq[1,], custom_format = "qseqid bitscore length")
-cl[1:5,]
+## Pass on BLAST arguments (99% identity) and use a custom format (see BLAST documentation)
+cl <- predict(bl, seq,
+  BLAST_args = "-perc_identity 99",
+  custom_format = "qseqid sseqid pident bitscore length stitle")
+cl
 }
 }
 \keyword{model}

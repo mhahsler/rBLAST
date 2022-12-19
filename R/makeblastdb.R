@@ -17,7 +17,13 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-makeblastdb <- function(file, dbtype = "nucl", args="") {
-  system(paste(.findExecutable("makeblastdb"), "-in", file,
-    "-dbtype", dbtype, args))
+makeblastdb <- function(file, dbtype = "nucl", args = "") {
+  system(paste(
+    .findExecutable("makeblastdb"),
+    "-in",
+    file,
+    "-dbtype",
+    dbtype,
+    args
+  ))
 }
