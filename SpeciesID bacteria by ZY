@@ -18,12 +18,12 @@ dbfile<-"C:/Users/user/Documents/16SMicrobialDB/bacteria.16SrRNA.fna"
 Read<-function(datapath,pattern)
 {X<-list.files(datapath,pattern,full.names=T)
 Data<-lapply(X,readDNAStringSet,use.names=T)
-assign("Data",Data,envir = .GlobalEnv)}
+return(Data)}
 datapath<-""
 pattern<-".fasta"
 
 #ID result as IDlist, indentity must between 0 to 100 as percentage of indentity cutoff. covleng must be between 0-1, as the length coverage of 16s reference.
-
+#data must be a list of DNAstringSet
 ID<-function(data,indentity,covleng)
 {
   E<-NULL
@@ -35,7 +35,7 @@ if (length(D$qseqid)==0)
 {D<-NULL}else{
   row.names(D)[1:length(D$qseqid)]<-names(data)[i]}
 E<-rbind(E,D)}
-  assign("IDlist",E,envir = .GlobalEnv) }
+  return(E) }
 
 ID(Data,90,0.8)
   
