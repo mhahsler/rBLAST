@@ -72,9 +72,10 @@ blast_help <- function(type = "blastn") {
 predict.BLAST <-
   function(object,
     newdata,
-    silent = FALSE,
     BLAST_args = "",
     custom_format = "",
+    verbose = FALSE,
+    keep_tmp = FALSE,
     ...) {
     db <- object$db
     exe <- object$type
@@ -85,31 +86,42 @@ predict.BLAST <-
     dir <- getwd()
     temp_file <- basename(tempfile(tmpdir = wd))
     on.exit({
-      #cat(temp_file, "\n")
-      file.remove(Sys.glob(paste(temp_file, "*", sep = "")))
+      if (!keep_tmp)
+        file.remove(Sys.glob(paste(temp_file, "*", sep = "")))
+      else
+        cat("Temporary BLAST files kept in", wd, "\n")
       setwd(dir)
     })
+
+    if (verbose) cat("Starting BLAST\n * all files are written to:", wd , "\n")
     setwd(wd)
 
     infile <- paste(temp_file, ".fasta", sep = "")
     outfile <- paste(temp_file, "_BLAST_out.txt", sep = "")
 
+    if (verbose) cat(" * writing FASTA query sequences to", infile ,"\n")
     writeXStringSet(x, infile, append = FALSE, format = "fasta")
 
+    cmd <- .findExecutable(exe)
+    args <- c(
+      "-db",
+      db,
+      "-query",
+      infile,
+      "-out",
+      outfile,
+      '-outfmt "10',
+      custom_format,
+      '"',
+      BLAST_args
+    )
+
+    if (verbose) cat(" * running", .findExecutable(exe) ,
+                     args, "\n")
+
     system2(
-      command = .findExecutable(exe),
-      args = c(
-        "-db",
-        db,
-        "-query",
-        infile,
-        "-out",
-        outfile,
-        '-outfmt "10',
-        custom_format,
-        '"',
-        BLAST_args
-      )
+      command = cmd,
+      args = args
     )
 
     ## rdp output column names
@@ -133,16 +145,21 @@ predict.BLAST <-
     }
 
     ## read and parse BLAST output
+    if (verbose) cat(" * reading results from ", outfile ,"\n")
+
     if (is(try(cl_tab <-
-        read.table(outfile, sep = ",", quote = ""), silent = silent)
+        read.table(outfile, sep = ",", quote = "", col.names = c_names),
+        silent = FALSE)
       , "try-error")) {
-      warning("BLAST did not return a match!")
+      warning("BLAST did not return any matches!")
       cl_tab <- data.frame(matrix(ncol = length(c_names), nrow = 0))
     }
 
     # stitle returns two columns???
     #if(ncol(cl_tab) != length(c_names)) stop("Problem with format (e.g., custom_format)!")
-    colnames(cl_tab) <- c_names
+    #colnames(cl_tab) <- c_names
+
+    if (verbose) cat(" * found", nrow(cl_tab) , "matches.\n")
 
     cl_tab
   }

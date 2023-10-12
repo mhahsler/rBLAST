@@ -12,8 +12,8 @@ Execute blastn from blast+.
 \usage{
 blast(db = NULL, type = "blastn")
 blast_help(type = "blastn")
-\method{predict}{BLAST}(object, newdata, silent = FALSE,
-        BLAST_args = "", custom_format = "", ...)
+\method{predict}{BLAST}(object, newdata, BLAST_args = "", custom_format = "",
+      verbose = FALSE, keep_tmp = FALSE, ...)
 \method{print}{BLAST}(x, info = TRUE, ...)
 }
 \arguments{
@@ -21,11 +21,12 @@ blast_help(type = "blastn")
   \item{type}{ BLAST program to use (e.g., blastn, blastp, blastx).}
   \item{object, x}{ A BLAST object. }
   \item{newdata}{ the query as an object of class XStringSet.}
-  \item{silent}{ should the BLAST output be read in silently? }
   \item{BLAST_args}{ additional arguments in command-line style.}
   \item{custom_format}{ custom format specified by space delimited format specifiers. }
   \item{info}{ print information about the database (needs blastdbcmd
   in the path).}
+  \item{verbose}{ logical; print progress and debuging information.}
+  \item{keep_tmp}{ logical; keep temporary files for debugging.}
   \item{...}{ additional arguments are ignored.}
 }
 \details{
@@ -87,7 +88,7 @@ print(bl, info = TRUE)
 seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
 	package = "rBLAST"))[1]
 seq
-n
+
 ## query a sequence using BLAST
 cl <- predict(bl, seq)
 cl[1:5,]
