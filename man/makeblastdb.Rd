@@ -1,5 +1,7 @@
 \name{makeblastdb}
 \alias{makeblastdb}
+\alias{blast}
+\alias{BLAST}
 \title{
 Create BLAST Databases
 }
@@ -24,6 +26,9 @@ the command line tool.
 }
 \references{
 BLAST+ \url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download}
+}
+\seealso{
+ \code{\link{blast}} for opening and searching BLAST databases.
 }
 \author{
     Michael Hahsler

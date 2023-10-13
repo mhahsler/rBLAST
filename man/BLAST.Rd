@@ -1,7 +1,9 @@
 \name{BLAST}
 \alias{blast}
+\alias{BLAST}
 \alias{blast_help}
 \alias{predict.BLAST}
+\alias{predict}
 \alias{print.BLAST}
 \title{
 Basic Local Alignment Search Tool (BLAST)
@@ -12,8 +14,10 @@ Execute blastn from blast+.
 \usage{
 blast(db = NULL, type = "blastn")
 blast_help(type = "blastn")
+
 \method{predict}{BLAST}(object, newdata, BLAST_args = "", custom_format = "",
       verbose = FALSE, keep_tmp = FALSE, ...)
+
 \method{print}{BLAST}(x, info = TRUE, ...)
 }
 \arguments{
@@ -53,7 +57,10 @@ from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 \code{blast()} returns a blast database object which can be used for queries
 (via \code{predict}). \code{predict}
 returns a data.frame containing the
-blast results.
+BLAST results.
+}
+\seealso{
+ \code{\link{makeblastdb}} for creating custom BLAST databases from FASTA files.
 }
 \references{
 BLAST+ \url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download}
