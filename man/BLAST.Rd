@@ -34,9 +34,9 @@ blast_help(type = "blastn")
   \item{...}{ additional arguments are ignored.}
 }
 \details{
-The blast+ software has to be installed:
+The BLAST+ software has to be installed:
 \itemize{
-    \item{For Linux (Debian/Ubuntu)}{install package: ncbi-blast+}
+    \item{For Linux (Debian/Ubuntu) }{install package: ncbi-blast+}
     \item{For Windows or OS X} install the software from
     \url{https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/}.
 }
@@ -52,6 +52,9 @@ search path.
 You will also need a database. NCBI BLAST databases are updated daily
 and may be downloaded via FTP
 from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
+
+Custom output format. If no custom format is specified, then
+
 }
 \value{
 \code{blast()} returns a blast database object which can be used for queries
@@ -63,7 +66,9 @@ BLAST results.
  \code{\link{makeblastdb}} for creating custom BLAST databases from FASTA files.
 }
 \references{
-BLAST+ \url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download}
+BLAST Help - BLAST+ Executable: \url{https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html}
+
+BLAST Command Line Applications User Manual, \url{https://www.ncbi.nlm.nih.gov/books/NBK279690/}
 }
 \author{
     Michael Hahsler
@@ -101,9 +106,10 @@ cl <- predict(bl, seq)
 cl[1:5,]
 
 ## Pass on BLAST arguments (99% identity) and use a custom format (see BLAST documentation)
+fmt <- "qaccver saccver pident length mismatch gapopen qstart qend sstart send evalue bitscore qseq sseq"
 cl <- predict(bl, seq,
   BLAST_args = "-perc_identity 99",
-  custom_format = "qseqid sseqid pident bitscore length stitle")
+  custom_format = fmt)
 cl
 }
 }

@@ -55,7 +55,7 @@ print.BLAST <- function(x, info = TRUE, ...) {
     out <- system2(
       .findExecutable("blastdbcmd"),
       args = c("-db", x$db,
-        "-info"),
+               "-info"),
       stdout = TRUE
     )
     cat(paste(out, collapse = "\n"))
@@ -71,12 +71,12 @@ blast_help <- function(type = "blastn") {
 
 predict.BLAST <-
   function(object,
-    newdata,
-    BLAST_args = "",
-    custom_format = "",
-    verbose = FALSE,
-    keep_tmp = FALSE,
-    ...) {
+           newdata,
+           BLAST_args = "",
+           custom_format = "",
+           verbose = FALSE,
+           keep_tmp = FALSE,
+           ...) {
     db <- object$db
     exe <- object$type
     x <- newdata
@@ -93,13 +93,15 @@ predict.BLAST <-
       setwd(dir)
     })
 
-    if (verbose) cat("Starting BLAST\n * all files are written to:", wd , "\n")
+    if (verbose)
+      cat("Starting BLAST\n * all files are written to:", wd , "\n")
     setwd(wd)
 
     infile <- paste(temp_file, ".fasta", sep = "")
     outfile <- paste(temp_file, "_BLAST_out.txt", sep = "")
 
-    if (verbose) cat(" * writing FASTA query sequences to", infile ,"\n")
+    if (verbose)
+      cat(" * writing FASTA query sequences to", infile , "\n")
     writeXStringSet(x, infile, append = FALSE, format = "fasta")
 
     cmd <- .findExecutable(exe)
@@ -111,46 +113,50 @@ predict.BLAST <-
       "-out",
       outfile,
       '-outfmt "10',
+      ### 10 is CSV
       custom_format,
       '"',
       BLAST_args
     )
 
-    if (verbose) cat(" * running", .findExecutable(exe) ,
-                     args, "\n")
+    if (verbose)
+      cat(" * running", .findExecutable(exe) ,
+          args, "\n")
 
-    system2(
-      command = cmd,
-      args = args
-    )
+    system2(command = cmd,
+            args = args)
 
     ## rdp output column names
     if (custom_format == "") {
       c_names <- c(
-        "QueryID",
-        "SubjectID",
-        "Perc.Ident",
-        "Alignment.Length",
-        "Mismatches",
-        "Gap.Openings",
-        "Q.start",
-        "Q.end",
-        "S.start",
-        "S.end",
-        "E",
-        "Bits"
+        "qseqid",
+        "sseqid",
+        "pident",
+        "length",
+        "mismatch",
+        "gapopen",
+        "qstart",
+        "qend",
+        "sstart",
+        "send",
+        "evalue",
+        "bitscore"
       )
     } else{
       c_names <- unlist(strsplit(custom_format, split = " +"))
     }
 
     ## read and parse BLAST output
-    if (verbose) cat(" * reading results from ", outfile ,"\n")
+    if (verbose)
+      cat(" * reading results from ", outfile , "\n")
 
     if (is(try(cl_tab <-
-        read.table(outfile, sep = ",", quote = "", col.names = c_names),
-        silent = FALSE)
-      , "try-error")) {
+               read.table(outfile,
+                          sep = ",",
+                          quote = "",
+                          col.names = c_names),
+               silent = FALSE)
+           , "try-error")) {
       warning("BLAST did not return any matches!")
       cl_tab <- data.frame(matrix(ncol = length(c_names), nrow = 0))
     }
@@ -159,7 +165,8 @@ predict.BLAST <-
     #if(ncol(cl_tab) != length(c_names)) stop("Problem with format (e.g., custom_format)!")
     #colnames(cl_tab) <- c_names
 
-    if (verbose) cat(" * found", nrow(cl_tab) , "matches.\n")
+    if (verbose)
+      cat(" * found", nrow(cl_tab) , "matches.\n")
 
     cl_tab
   }
