@@ -1,11 +1,11 @@
 proj$
 ^\.Rproj\.user$
-^\.travis\.yml$
 ^cran-comments\.md$
-^appveyor\.yml$
 ^revdep$
-^.*\.o$
 ^.*\.Rproj$
 ^LICENSE
 Work
-vignettes_real
+README.Rmd
+16S_rRNA_DB/
+16S_ribosomal_RNA.tar.gz
+

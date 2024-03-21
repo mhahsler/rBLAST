@@ -1,6 +1,15 @@
 
 # rBLAST - R Interface for the Basic Local Alignment Search Tool (BLAST)
 
+# R package arules - Mining Association Rules and Frequent Itemsets
+
+[![CRAN
+version](http://www.r-pkg.org/badges/version/arules)](https://CRAN.R-project.org/package=arules)
+[![stream r-universe
+status](https://mhahsler.r-universe.dev/badges/arules)](https://mhahsler.r-universe.dev/arules)
+[![CRAN RStudio mirror
+downloads](http://cranlogs.r-pkg.org/badges/arules)](https://CRAN.R-project.org/package=arules)
+
 [![rBLAST r-universe
 status](https://mhahsler.r-universe.dev/badges/rBLAST)](https://mhahsler.r-universe.dev/ui#package:rBLAST)
 
@@ -26,14 +35,14 @@ Other R interfaces for bioinformatics are also available:
 2.  Install the `rBlast` from r-universe using
 
     ``` r
-    install.packages('rBLAST', repos = 'https://mhahsler.r-universe.dev')
+    install.packages("rBLAST", repos = "https://mhahsler.r-universe.dev")
     ```
 
 3.  Install the BLAST software by following the instructions found in
 
     ``` r
-    library('rBLAST')
-    ? blast
+    library("rBLAST")
+    `?`(blast)
     ```
 
 ## Usage
@@ -45,17 +54,16 @@ library(rBLAST)
 Download the 16S Microbial data base from NCBI
 
 ``` r
-download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
-   "16S_ribosomal_RNA.tar.gz", mode='wb')
+download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz", "16S_ribosomal_RNA.tar.gz",
+    mode = "wb")
 
-untar("16S_ribosomal_RNA.tar.gz", exdir="16SMicrobialDB")
+untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
 ```
 
 Load some test sequences
 
 ``` r
-seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-                        package="rBLAST"))
+seq <- readRNAStringSet(system.file("examples/RNA_example.fasta", package = "rBLAST"))
 seq
 ```
 
@@ -71,7 +79,7 @@ Load a BLAST database (replace db with the location + name of the BLAST
 DB)
 
 ``` r
-bl <- blast(db="./16S_rRNA_DB/16S_ribosomal_RNA")
+bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
 bl
 ```
 
@@ -79,9 +87,9 @@ bl
     ## Location: /home/hahsler/baR/rBLAST/16S_rRNA_DB/16S_ribosomal_RNA 
     ## BLAST Type: blastn 
     ## Database: 16S ribosomal RNA (Bacteria and Archaea type strains)
-    ##  21,856 sequences; 31,790,086 total bases
+    ##  22,239 sequences; 32,329,036 total bases
     ## 
-    ## Date: May 1, 2021  5:36 AM   Longest sequence: 3,600 bases
+    ## Date: Mar 12, 2024  5:36 AM  Longest sequence: 3,600 bases
     ## 
     ## BLASTDB Version: 5
     ## 
@@ -92,20 +100,20 @@ Query a sequence using BLAST and find sequences with a 99% percent
 identity or higher.
 
 ``` r
-cl <- predict(bl, seq[1,], BLAST_args = "-perc_identity 99")
+cl <- predict(bl, seq[1, ], BLAST_args = "-perc_identity 99")
 cl
 ```
 
-    ##   QueryID   SubjectID Perc.Ident Alignment.Length Mismatches Gap.Openings
-    ## 1    1675 NR_151899.1        100               40          0            0
-    ## 2    1675 NR_041235.1        100               37          0            0
-    ## 3    1675 NR_036779.1        100               34          0            0
-    ## 4    1675 NR_117153.1        100               32          0            0
-    ##   Q.start Q.end S.start S.end        E Bits
-    ## 1      22    61       2    41 1.22e-12 75.0
-    ## 2      22    58       2    38 5.66e-11 69.4
-    ## 3      24    57       2    35 2.63e-09 63.9
-    ## 4      27    58       1    32 3.40e-08 60.2
+    ##   qseqid      sseqid pident length mismatch gapopen qstart qend sstart send
+    ## 1   1675 NR_151899.1    100     40        0       0     22   61      2   41
+    ## 2   1675 NR_041235.1    100     37        0       0     22   58      2   38
+    ## 3   1675 NR_173526.1    100     35        0       0     32   66      1   35
+    ## 4   1675 NR_117153.1    100     32        0       0     27   58      1   32
+    ##    evalue bitscore
+    ## 1 1.2e-12       75
+    ## 2 5.8e-11       69
+    ## 3 7.4e-10       66
+    ## 4 3.5e-08       60
 
 ## Citation Request
 

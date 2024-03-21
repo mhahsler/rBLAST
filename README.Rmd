@@ -4,6 +4,14 @@ output: github_document
 
 # rBLAST - R Interface for the Basic Local Alignment Search Tool (BLAST)
 
+```{r echo=FALSE, results = 'asis'}
+pkg <- 'arules'
+
+source("https://raw.githubusercontent.com/mhahsler/pkg_helpers/main/pkg_helpers.R")
+pkg_title(pkg)
+```
+
+
 [![rBLAST r-universe
 status](https://mhahsler.r-universe.dev/badges/rBLAST)](https://mhahsler.r-universe.dev/ui#package:rBLAST)
 
@@ -43,7 +51,7 @@ Download the 16S Microbial data base from NCBI
 download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
    "16S_ribosomal_RNA.tar.gz", mode='wb')
 
-untar("16S_ribosomal_RNA.tar.gz", exdir="16SMicrobialDB")
+untar("16S_ribosomal_RNA.tar.gz", exdir="16S_rRNA_DB")
 ```
 
 Load some test sequences

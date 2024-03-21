@@ -16,6 +16,100 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+
+#' Basic Local Alignment Search Tool (BLAST)
+#'
+#' Open a BLAST data base and execute blastn from blast+ to find sequences matches.
+#'
+#' The BLAST+ software has to be installed:
+#' *  Linux (e.g., Debian/Ubuntu) install package: `ncbi-blast+`
+#' *  Windows or OS X install the software from
+#'     \url{https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/}.
+#'
+#' R needs to be able to find the executable (mostly an issue with Windows).
+#' Try `Sys.which("blastn")` to see if the program is properly installed.
+#' If not, then you probably need to set the environment variable called `PATH`
+#' using something like `Sys.setenv(PATH = paste(Sys.getenv("PATH"),
+#' "path_to_BLAST", sep= .Platform$path.sep))`. You can use `Sys.getenv("PATH")`
+#' first to see what is currently in the search path.
+#'
+#' You will also need a database. NCBI BLAST databases are updated daily and
+#' may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
+#'
+#' Custom output format. If no custom format is specified, then
+#'
+#' @name blast
+#' @aliases blast BLAST
+#' @param db the database file to be searched (without file extension).
+#' @param type BLAST program to use (e.g., `blastn`, `blastp`, `blastx`).
+#' @param object,x An open BLAST database as a BLAST object created with [blast()].
+#' @param newdata the query as an object of class [XStringSet].
+#' @param BLAST_args additional arguments in command-line style.
+#' @param custom_format custom format specified by space delimited format
+#' specifiers.
+#' @param info print information about the database (needs the executable
+#'  `blastdbcmd` in the
+#' path).
+#' @param verbose logical; print progress and debugging information.
+#' @param keep_tmp logical; keep temporary files for debugging.
+#' @param info show additional data base information.
+#' @param ...  additional arguments are ignored.
+#' @return `blast()` returns a BLAST database object which can be used for
+#' queries (via `predict`). `predict` returns a data.frame containing
+#' the BLAST results.
+#' @author Michael Hahsler
+#' @seealso [makeblastdb] for creating custom BLAST databases from
+#' FASTA files.
+#' @references BLAST Help - BLAST+ Executable:
+#' \url{https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html}
+#'
+#' BLAST Command Line Applications User Manual,
+#' \url{https://www.ncbi.nlm.nih.gov/books/NBK279690/}
+#' @keywords model
+#' @examples
+#' \dontrun{
+#' ## check if blastn is correctly installed
+#' Sys.which("blastn")
+#'
+#' ## check version you should have version 1.8.1+
+#' system("blastn -version")
+#'
+#' ## download the 16S Microbial rRNA data base from NCBI
+#' if (!file.exists("16S_rRNA_DB")) {
+#'   download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
+#'     "16S_ribosomal_RNA.tar.gz", mode = 'wb')
+#'   untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
+#' }
+#'
+#' ## load a BLAST database (replace db with the location + name of the BLAST DB
+#' ## without the extension)
+#' list.files("./16S_rRNA_DB/")
+#' bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
+#' bl
+#'
+#' print(bl, info = TRUE)
+#'
+#' ## read a single example sequence to BLAST
+#' seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+#' 	package = "rBLAST"))[1]
+#' seq
+#'
+#' ## query a sequence using BLAST
+#' cl <- predict(bl, seq)
+#' cl[1:5,]
+#'
+#' ## Pass on BLAST arguments (99% identity) and use a custom format (see BLAST documentation)
+#' fmt <- paste("qaccver saccver pident length mismatch gapopen qstart qend",
+#'   "sstart send evalue bitscore qseq sseq")
+#' cl <- predict(bl, seq,
+#'   BLAST_args = "-perc_identity 99",
+#'   custom_format = fmt)
+#' cl
+#' }
+#' @importFrom utils read.table
+#' @importFrom methods is
+#' @import Biostrings
+#' @export
 blast  <- function(db = NULL, type = "blastn") {
   if (is.null(db))
     stop("No BLAST database specified!")
@@ -47,6 +141,14 @@ blast  <- function(db = NULL, type = "blastn") {
   structure(list(db = db, type = type), class = "BLAST")
 }
 
+#' @rdname blast
+#' @export
+blast_help <- function(type = "blastn") {
+  system2(.findExecutable(c(type)), args = c("-help"))
+}
+
+#' @rdname blast
+#' @export
 print.BLAST <- function(x, info = TRUE, ...) {
   cat("BLAST Database\nLocation:", x$db, "\n")
   cat("BLAST Type:", x$type, "\n")
@@ -63,12 +165,8 @@ print.BLAST <- function(x, info = TRUE, ...) {
   }
 }
 
-
-blast_help <- function(type = "blastn") {
-  system2(.findExecutable(c(type)), args = c("-help"))
-}
-
-
+#' @rdname blast
+#' @export
 predict.BLAST <-
   function(object,
            newdata,
