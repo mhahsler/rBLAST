@@ -1,17 +1,12 @@
 
-# rBLAST - R Interface for the Basic Local Alignment Search Tool (BLAST)
-
-# R package arules - Mining Association Rules and Frequent Itemsets
+# R package rBLAST - R Interface for the Basic Local Alignment Search Tool
 
 [![CRAN
-version](http://www.r-pkg.org/badges/version/arules)](https://CRAN.R-project.org/package=arules)
+version](http://www.r-pkg.org/badges/version/rBLAST)](https://CRAN.R-project.org/package=rBLAST)
 [![stream r-universe
-status](https://mhahsler.r-universe.dev/badges/arules)](https://mhahsler.r-universe.dev/arules)
+status](https://mhahsler.r-universe.dev/badges/rBLAST)](https://mhahsler.r-universe.dev/rBLAST)
 [![CRAN RStudio mirror
-downloads](http://cranlogs.r-pkg.org/badges/arules)](https://CRAN.R-project.org/package=arules)
-
-[![rBLAST r-universe
-status](https://mhahsler.r-universe.dev/badges/rBLAST)](https://mhahsler.r-universe.dev/ui#package:rBLAST)
+downloads](http://cranlogs.r-pkg.org/badges/rBLAST)](https://CRAN.R-project.org/package=rBLAST)
 
 Interfaces the Basic Local Alignment Search Tool (BLAST) to search
 genetic sequence data bases with the Bioconductor infrastructure. This
@@ -32,7 +27,7 @@ Other R interfaces for bioinformatics are also available:
     instructions
     [here](https://bioconductor.org/packages/release/bioc/html/Biostrings.html).
 
-2.  Install the `rBlast` from r-universe using
+2.  Install `rBlast` from r-universe using
 
     ``` r
     install.packages("rBLAST", repos = "https://mhahsler.r-universe.dev")
@@ -42,7 +37,7 @@ Other R interfaces for bioinformatics are also available:
 
     ``` r
     library("rBLAST")
-    `?`(blast)
+    help("blast")
     ```
 
 ## Usage
@@ -51,7 +46,7 @@ Other R interfaces for bioinformatics are also available:
 library(rBLAST)
 ```
 
-Download the 16S Microbial data base from NCBI
+Download the 16S Microbial data base from NCBI.
 
 ``` r
 download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz", "16S_ribosomal_RNA.tar.gz",
@@ -60,23 +55,7 @@ download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz", 
 untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
 ```
 
-Load some test sequences
-
-``` r
-seq <- readRNAStringSet(system.file("examples/RNA_example.fasta", package = "rBLAST"))
-seq
-```
-
-    ## RNAStringSet object of length 5:
-    ##     width seq                                               names               
-    ## [1]  1481 AGAGUUUGAUCCUGGCUCAGAAC...GGUGAAGUCGUAACAAGGUAACC 1675 AB015560.1 d...
-    ## [2]  1404 GCUGGCGGCAGGCCUAACACAUG...CACGGUAAGGUCAGCGACUGGGG 4399 D14432.1 Rho...
-    ## [3]  1426 GGAAUGCUNAACACAUGCAAGUC...AACAAGGUAGCCGUAGGGGAACC 4403 X72908.1 Ros...
-    ## [4]  1362 GCUGGCGGAAUGCUUAACACAUG...UACCUUAGGUGUCUAGGCUAACC 4404 AF173825.1 A...
-    ## [5]  1458 AGAGUUUGAUUAUGGCUCAGAGC...UGAAGUCGUAACAAGGUAACCGU 4411 Y07647.2 Dre...
-
-Load a BLAST database (replace db with the location + name of the BLAST
-DB)
+Load the downloaded BLAST database.
 
 ``` r
 bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
@@ -96,8 +75,23 @@ bl
     ## Volumes:
     ##  /home/hahsler/baR/rBLAST/16S_rRNA_DB/16S_ribosomal_RNA
 
-Query a sequence using BLAST and find sequences with a 99% percent
-identity or higher.
+Load some test sequences cgipped with the package.
+
+``` r
+seq <- readRNAStringSet(system.file("examples/RNA_example.fasta", package = "rBLAST"))
+seq
+```
+
+    ## RNAStringSet object of length 5:
+    ##     width seq                                               names               
+    ## [1]  1481 AGAGUUUGAUCCUGGCUCAGAAC...GGUGAAGUCGUAACAAGGUAACC 1675 AB015560.1 d...
+    ## [2]  1404 GCUGGCGGCAGGCCUAACACAUG...CACGGUAAGGUCAGCGACUGGGG 4399 D14432.1 Rho...
+    ## [3]  1426 GGAAUGCUNAACACAUGCAAGUC...AACAAGGUAGCCGUAGGGGAACC 4403 X72908.1 Ros...
+    ## [4]  1362 GCUGGCGGAAUGCUUAACACAUG...UACCUUAGGUGUCUAGGCUAACC 4404 AF173825.1 A...
+    ## [5]  1458 AGAGUUUGAUUAUGGCUCAGAGC...UGAAGUCGUAACAAGGUAACCGU 4411 Y07647.2 Dre...
+
+Query the BLAST database to find matches for the first test sequence
+with a 99% percent identity or higher.
 
 ``` r
 cl <- predict(bl, seq[1, ], BLAST_args = "-perc_identity 99")

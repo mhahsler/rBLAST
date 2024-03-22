@@ -16,3 +16,5 @@ vignettes/*.pdf
 # Data
 16S_ribosomal_RNA.tar.gz
 16S_rRNA_DB/
+
+rBLAST.BiocCheck/

@@ -8,4 +8,5 @@ Work
 README.Rmd
 16S_rRNA_DB/
 16S_ribosomal_RNA.tar.gz
+rBLAST.BiocCheck/
 

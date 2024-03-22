@@ -31,50 +31,60 @@
 #' @param file input file/database name. **Note** that the filename and path
 #' cannot contain whitespaces.
 #' @param dbtype molecule type of target db (`"nucl"` or `"prot"`).
-#' @param args string including additional arguments passed on to `makeblastdb`.
+#' @param db_name name of the database (files).
+#' @param hash_index logical; create index of sequence hash values.
+#' @param args string including additional arguments passed on
+#'     to `makeblastdb`.
+#' @param verbose logical; show the progress report produced by `makeblastdb`?
 #' @author Michael Hahsler
 #' @seealso [[blast()] for opening and searching BLAST databases.
 #' @references BLAST+
 #' \url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download}
+#' @returns Nothing
 #' @keywords model
 #' @examples
-#'
-#' \dontrun{
 #' ## check if makeblastdb is correctly installed
 #' Sys.which("makeblastdb")
 #'
 #' ## see possible arguments
 #' blast_help("makeblastdb")
 #'
-#' ## create a database for some example sequences
+#' ## read some example sequences
 #' seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-#'     package="rBLAST"))
+#'     package = "rBLAST"
+#' ))
 #'
 #' ## 1. write the FASTA file
-#' dir <- tempdir()
-#' writeXStringSet(seq, filepath = file.path(dir, "seqs.fasta"))
+#' writeXStringSet(seq, filepath = "seqs.fasta")
 #'
 #' ## 2. make database
-#' makeblastdb(file.path(dir, "seqs.fasta"), dbtype = "nucl")
+#' makeblastdb(file = "seqs.fasta", db_name = "db/small", dbtype = "nucl")
 #'
 #' ## 3. open database
-#' db <- blast(file.path(dir, "seqs.fasta"))
+#' db <- blast("db/small")
 #' db
 #'
 #' ## 4. perform search (first sequence in the db should be a perfect match)
 #' predict(db, seq[1])
 #'
 #' ## clean up
-#' unlink(dir, recursive = TRUE)
-#' }
+#' unlink("seqs.fasta")
+#' unlink("db", recursive = TRUE)
 #' @export
-makeblastdb <- function(file, dbtype = "nucl", args = "") {
-  system(paste(
-    .findExecutable("makeblastdb"),
-    "-in",
-    file,
-    "-dbtype",
-    dbtype,
-    args
-  ))
+makeblastdb <- function(file, db_name = NULL, dbtype = "nucl",
+                        hash_index = TRUE,
+                        args = "", verbose = TRUE) {
+    system2(
+        .findExecutable("makeblastdb"),
+        paste(
+            "-in",
+            file,
+            "-dbtype",
+            dbtype,
+            ifelse(!is.null(db_name), paste("-out", db_name), ""),
+            ifelse(hash_index, "-hash_index", ""),
+            args
+        ),
+        stdout = ifelse(verbose, "", FALSE)
+    )
 }

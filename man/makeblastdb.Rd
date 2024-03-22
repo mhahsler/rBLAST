@@ -4,15 +4,32 @@
 \alias{makeblastdb}
 \title{Create BLAST Databases}
 \usage{
-makeblastdb(file, dbtype = "nucl", args = "")
+makeblastdb(
+  file,
+  db_name = NULL,
+  dbtype = "nucl",
+  hash_index = TRUE,
+  args = "",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{file}{input file/database name. \strong{Note} that the filename and path
 cannot contain whitespaces.}
 
+\item{db_name}{name of the database (files).}
+
 \item{dbtype}{molecule type of target db (\code{"nucl"} or \code{"prot"}).}
 
-\item{args}{string including additional arguments passed on to \code{makeblastdb}.}
+\item{hash_index}{logical; create index of sequence hash values.}
+
+\item{args}{string including additional arguments passed on
+to \code{makeblastdb}.}
+
+\item{verbose}{logical; show the progress report produced by \code{makeblastdb}?}
+}
+\value{
+Nothing
 }
 \description{
 Call the \code{makeblastdb} utility to create a BLAST database from a FASTA file.
@@ -27,35 +44,33 @@ Arguments need to be formated in exactly the way as they would be used for
 the command line tool.
 }
 \examples{
-
-\dontrun{
 ## check if makeblastdb is correctly installed
 Sys.which("makeblastdb")
 
 ## see possible arguments
 blast_help("makeblastdb")
 
-## create a database for some example sequences
+## read some example sequences
 seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-    package="rBLAST"))
+    package = "rBLAST"
+))
 
 ## 1. write the FASTA file
-dir <- tempdir()
-writeXStringSet(seq, filepath = file.path(dir, "seqs.fasta"))
+writeXStringSet(seq, filepath = "seqs.fasta")
 
 ## 2. make database
-makeblastdb(file.path(dir, "seqs.fasta"), dbtype = "nucl")
+makeblastdb(file = "seqs.fasta", db_name = "db/small", dbtype = "nucl")
 
 ## 3. open database
-db <- blast(file.path(dir, "seqs.fasta"))
+db <- blast("db/small")
 db
 
 ## 4. perform search (first sequence in the db should be a perfect match)
 predict(db, seq[1])
 
 ## clean up
-unlink(dir, recursive = TRUE)
-}
+unlink("seqs.fasta")
+unlink("db", recursive = TRUE)
 }
 \references{
 BLAST+

@@ -33,7 +33,8 @@ blast_help(type = "blastn")
 
 \item{...}{additional arguments are ignored.}
 
-\item{object, x}{An open BLAST database as a BLAST object created with \code{\link[=blast]{blast()}}.}
+\item{object, x}{An open BLAST database as a BLAST object created
+with \code{\link[=blast]{blast()}}.}
 
 \item{newdata}{the query as an object of class \link{XStringSet}.}
 
@@ -52,7 +53,8 @@ queries (via \code{predict}). \code{predict} returns a data.frame containing
 the BLAST results.
 }
 \description{
-Open a BLAST data base and execute blastn from blast+ to find sequences matches.
+Open a BLAST database and execute blastn from blast+ to find sequences
+matches.
 }
 \details{
 The BLAST+ software has to be installed:
@@ -65,8 +67,8 @@ The BLAST+ software has to be installed:
 R needs to be able to find the executable (mostly an issue with Windows).
 Try \code{Sys.which("blastn")} to see if the program is properly installed.
 If not, then you probably need to set the environment variable called \code{PATH}
-using something like \code{Sys.setenv(PATH = paste(Sys.getenv("PATH"), "path_to_BLAST", sep= .Platform$path.sep))}. You can use \code{Sys.getenv("PATH")}
-first to see what is currently in the search path.
+using something like \code{Sys.setenv(PATH = paste(Sys.getenv("PATH"), "path_to_BLAST", sep= .Platform$path.sep))}. You can use
+\code{Sys.getenv("PATH")} first to see what is currently in the search path.
 
 You will also need a database. NCBI BLAST databases are updated daily and
 may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
@@ -74,22 +76,23 @@ may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 Custom output format. If no custom format is specified, then
 }
 \examples{
-\dontrun{
 ## check if blastn is correctly installed
 Sys.which("blastn")
 
 ## check version you should have version 1.8.1+
-system("blastn -version")
+system2("blastn", "-version")
 
 ## download the 16S Microbial rRNA data base from NCBI
 if (!file.exists("16S_rRNA_DB")) {
-  download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
-    "16S_ribosomal_RNA.tar.gz", mode = 'wb')
-  untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
+    download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
+        "16S_ribosomal_RNA.tar.gz",
+        mode = "wb"
+    )
+    untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
 }
 
-## load a BLAST database (replace db with the location + name of the BLAST DB
-## without the extension)
+## load a BLAST database (replace db with the location + name of
+## the BLAST DB without the extension)
 list.files("./16S_rRNA_DB/")
 bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
 bl
@@ -98,21 +101,25 @@ print(bl, info = TRUE)
 
 ## read a single example sequence to BLAST
 seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-	package = "rBLAST"))[1]
+    package = "rBLAST"
+))[1]
 seq
 
 ## query a sequence using BLAST
 cl <- predict(bl, seq)
-cl[1:5,]
+cl[1:5, ]
 
-## Pass on BLAST arguments (99\% identity) and use a custom format (see BLAST documentation)
-fmt <- paste("qaccver saccver pident length mismatch gapopen qstart qend",
-  "sstart send evalue bitscore qseq sseq")
+## Pass on BLAST arguments (99\% identity) and use a custom format
+## (see BLAST documentation)
+fmt <- paste(
+    "qaccver saccver pident length mismatch gapopen qstart qend",
+    "sstart send evalue bitscore qseq sseq"
+)
 cl <- predict(bl, seq,
-  BLAST_args = "-perc_identity 99",
-  custom_format = fmt)
+    BLAST_args = "-perc_identity 99",
+    custom_format = fmt
+)
 cl
-}
 }
 \references{
 BLAST Help - BLAST+ Executable:

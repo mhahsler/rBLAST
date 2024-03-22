@@ -1,0 +1,187 @@
+---
+title: "rBLAST: R Interface for the Basic Local Alignment Search Tool"
+author: "Michael Hahsler and Anurag Nagar"
+vignette: >
+  %\VignetteIndexEntry{rBLAST: R Interface for the Basic Local Alignment Search Tool}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output:
+  rmarkdown::html_vignette
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+```{r setup}
+library("rBLAST")
+```
+
+# Introduction
+
+This package provides an R interface to use 
+a local installation of 
+the Basic Local Alignment Search Tool (BLAST) executable. This allows the user
+to download BLAST databases for querying or to create their own database from 
+sets of sequences.
+The interface integrates BLAST search directly with the Bioconductor 
+infrastructure by using
+the `XStringSet` (e.g., `RNAStringSet`) from the package `Biostrings`.
+
+This package complements the function in `blastSequences()` in package `annotate` 
+that runs a BLAST query not locally but by connecting to the NCBI server. 
+
+# System requirements
+
+The BLAST+ software has to be installed locally. For Linux 
+(e.g., Debian/Ubuntu) install the 
+package `⁠ncbi-blast+ using the operating system's package manager.⁠
+For Windows or OS X, the software can be installed from 
+https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/.
+To check that the installation was successful and R can find the BLAST
+executable try the following: 
+
+
+```{r}
+Sys.which("blastn")
+```
+
+If this does not return the path to the executable, then you need to set 
+add the path to the executable with a line like this (replace 
+`"path_to_BLAST"` with the installation path):
+
+```{r, eval=FALSE}
+Sys.setenv(PATH = paste(Sys.getenv("PATH"), "path_to_BLAST",
+    sep = .Platform$path.sep
+))
+```
+
+# Examples
+
+## Use an existing database
+
+You can download databases from NCBI at https://ftp.ncbi.nlm.nih.gov/blast/db/. 
+Here we  download the 16S rRNA database.
+
+```{r}
+## download the 16S Microbial rRNA data base from NCBI
+if (!file.exists("16S_rRNA_DB")) {
+    download.file(paste0("https://ftp.ncbi.nlm.nih.gov/blast/db/",
+                  "16S_ribosomal_RNA.tar.gz"),
+        "16S_ribosomal_RNA.tar.gz",
+        mode = "wb"
+    )
+    untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
+}
+```
+
+A database consists of a folder with a set of database files.
+
+```{r}
+list.files("./16S_rRNA_DB/")
+```
+
+Next, we open the database. `blast()` returns a BLAST database object.
+```{r}
+bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
+bl
+```
+
+To demonstrate how to query the database, we read one sequence from an example 
+FASTA file that 
+is shipped with the package.
+
+```{r}
+seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+    package = "rBLAST"
+))[1]
+seq
+```
+
+Queries are performed using the `predict()` function. The result is a 
+`data.frame` with one row per match. We show the first 5 matches.
+
+
+
+```{r}
+cl <- predict(bl, seq)
+nrow(cl)
+cl[1:5, ]
+```
+
+Additional arguments for BLAST can be passed on using `BLAST_args` and 
+the output format
+can be specified using `custom_format`. Here we specify a custom format and 
+that the sequences need to have 99% identity. 
+See the BLAST Command Line Applications User Manual for details 
+(https://www.ncbi.nlm.nih.gov/books/NBK279690/).
+
+```{r}
+fmt <- paste(
+    "qaccver saccver pident length mismatch gapopen qstart qend",
+    "sstart send evalue bitscore qseq sseq"
+)
+cl <- predict(bl, seq,
+    BLAST_args = "-perc_identity 99",
+    custom_format = fmt
+)
+cl
+```
+
+## Create a custom BLAST database
+
+The `makeblastdb` utility can be used to create a BLAST database from a 
+FASTA file.
+The package provides an R interface function of the same name. As an example,
+we use sequences shipped with the package. 
+
+```{r}
+seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+    package = "rBLAST"
+))
+seq
+```
+
+First, we write a FASTA file
+```{r}
+writeXStringSet(seq, filepath = "seqs.fasta")
+```
+
+Next, we create a BLAST database from the file. 
+```{r}
+makeblastdb("seqs.fasta", db_name = "db/small", dbtype = "nucl")
+```
+
+Note that it is convenient to specify a folder and a name separated by 
+a `/` to organize all index files in a folder. 
+
+We can now open the database and use it for queries.
+```{r}
+db <- blast("db/small")
+db
+```
+
+Check if it finds a fragment from the first sequence in the training data.
+
+```{r}
+fragment <- subseq(seq[1], start = 100, end = 200)
+fragment
+
+predict(db, fragment)
+```
+
+To permanently remove a database, the folder can be deleted.
+```{r}
+unlink("seqs.fasta")
+unlink("db", recursive = TRUE)
+```
+
+# SessionInfo
+
+```{r}
+sessionInfo()
+```

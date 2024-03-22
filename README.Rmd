@@ -2,18 +2,12 @@
 output: github_document
 ---
 
-# rBLAST - R Interface for the Basic Local Alignment Search Tool (BLAST)
-
 ```{r echo=FALSE, results = 'asis'}
-pkg <- 'arules'
+pkg <- "rBLAST"
 
 source("https://raw.githubusercontent.com/mhahsler/pkg_helpers/main/pkg_helpers.R")
 pkg_title(pkg)
 ```
-
-
-[![rBLAST r-universe
-status](https://mhahsler.r-universe.dev/badges/rBLAST)](https://mhahsler.r-universe.dev/ui#package:rBLAST)
 
 Interfaces the Basic Local Alignment Search Tool (BLAST) to search genetic sequence data bases with the Bioconductor infrastructure. This includes
 interfaces to `blastn`, `blastp`, `blastx`, and `makeblastdb`.
@@ -29,14 +23,14 @@ Other R interfaces for bioinformatics are also available:
 ## Installation
 
 1. Install the Bioconductor package `Biostrings` following the instructions [here](https://bioconductor.org/packages/release/bioc/html/Biostrings.html).
-2. Install the `rBlast` from r-universe using 
+2. Install `rBlast` from r-universe using 
    ```{r, eval = FALSE}
-   install.packages('rBLAST', repos = 'https://mhahsler.r-universe.dev')
+install.packages("rBLAST", repos = "https://mhahsler.r-universe.dev")
    ```
 3. Install the BLAST software by following the instructions found in 
    ```{r, eval = FALSE}
-   library('rBLAST')
-   ? blast
+library("rBLAST")
+help("blast")
    ```
 
 ## Usage
@@ -45,34 +39,38 @@ Other R interfaces for bioinformatics are also available:
 library(rBLAST)
 ```
 
-Download the 16S Microbial data base from NCBI
+Download the 16S Microbial data base from NCBI.
 
 ```{r, eval = FALSE}
 download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
-   "16S_ribosomal_RNA.tar.gz", mode='wb')
+    "16S_ribosomal_RNA.tar.gz",
+    mode = "wb"
+)
 
-untar("16S_ribosomal_RNA.tar.gz", exdir="16S_rRNA_DB")
+untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
 ```
 
-Load some test sequences
+Load the downloaded BLAST database.
 
 ```{r}
-seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-                        package="rBLAST"))
-seq
-```
-
-Load a BLAST database (replace db with the location + name of the BLAST DB)
-
-```{r}
-bl <- blast(db="./16S_rRNA_DB/16S_ribosomal_RNA")
+bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
 bl
 ```
 
-Query a sequence using BLAST and find sequences with a 99% percent identity or higher.
+Load some test sequences shipped with the package.
 
 ```{r}
-cl <- predict(bl, seq[1,], BLAST_args = "-perc_identity 99")
+seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+    package = "rBLAST"
+))
+seq
+```
+
+Query the BLAST database to find matches for the first test sequence
+with a 99% percent identity or higher.
+
+```{r}
+cl <- predict(bl, seq[1, ], BLAST_args = "-perc_identity 99")
 cl
 ```
 

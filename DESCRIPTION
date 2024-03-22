@@ -1,21 +1,23 @@
 Package: rBLAST
 Title: R Interface for the Basic Local Alignment Search Tool
-Description: Seamlessly interfaces the Basic Local Alignment Search Tool (BLAST) to search genetic sequence data bases. This work was partially supported by grant no. R21HG005912 from the National Human Genome Research Institute.
-Version: 1.0.0
-Date: 2024-03-21
+Description: Seamlessly interfaces the Basic Local Alignment Search Tool 
+  (BLAST) to search genetic sequence data bases. This work was partially 
+  supported by grant no. R21HG005912 from the National Human 
+  Genome Research Institute.
+Version: 0.99.0
+Date: 2024-03-22
 Authors@R: c(person("Michael", "Hahsler",
                 role = c("aut", "cre"),
                 email = "mhahsler@lyle.smu.edu",
                 comment = c(ORCID = "0000-0003-2716-1405")),
             person("Nagar", "Anurag",
                 role = "aut"))
-biocViews: Genetics, Sequencing, Infrastructure,
-        Classification
+biocViews: Genetics, Sequencing, SequenceMatching, Alignment, DataImport
 Depends: Biostrings (>= 2.26.2)
-Suggests: knitr, rmarkdown
+Suggests: knitr, rmarkdown, testthat
 URL: https://github.com/mhahsler/rBLAST
 BugReports: https://github.com/mhahsler/rBLAST/issues
-Imports: methods
+Imports: methods, utils
 SystemRequirements: ncbi-blast+
 License: GPL-3
 VignetteBuilder: knitr
