@@ -1,0 +1,19 @@
+Installation instructions for package rBLAST
+
+1. Install BLAST+
+The BLAST+ software needs to be installed on your system. The software for
+different operating systems is available at:
+    https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+
+A precombiled software package is already available for many Linux distributions.
+The package is typically called ⁠ncbi-blast+. For example in Debian/Ubuntu, the
+package can be installed using the APT package manager:
+    apt-get install ncbi-blast+
+
+2. Setting the Path Environment Variable
+R needs to be able to find the executable. This is mostly only an issue with
+Windows. After installing the software, try in R Sys.which("blastn") to see if
+the program can be found. If the command returns "" instead of the path to the
+executable, then you need to set the environment variable called PATH. In R
+    Sys.setenv(PATH = paste(Sys.getenv("PATH"),
+        "path_to_your_BLAST_installation", sep=.Platform$path.sep))
