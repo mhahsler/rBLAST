@@ -37,7 +37,7 @@
 #'     to `makeblastdb`.
 #' @param verbose logical; show the progress report produced by `makeblastdb`?
 #' @author Michael Hahsler
-#' @seealso [[blast()] for opening and searching BLAST databases.
+#' @seealso [blast()] for opening and searching BLAST databases.
 #' @references BLAST+
 #' \url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download}
 #' @returns Nothing
@@ -45,6 +45,9 @@
 #' @examples
 #' ## check if makeblastdb is correctly installed
 #' Sys.which("makeblastdb")
+#'
+#' ## only run if blast is installed
+#' if (has_blast()){
 #'
 #' ## see possible arguments
 #' blast_help("makeblastdb")
@@ -70,6 +73,7 @@
 #' ## clean up
 #' unlink("seqs.fasta")
 #' unlink("db", recursive = TRUE)
+#' }
 #' @export
 makeblastdb <- function(file, db_name = NULL, dbtype = "nucl",
                         hash_index = TRUE,

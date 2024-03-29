@@ -1,3 +1,7 @@
+## Test
+
+skip_if_not(has_blast(), message = "BLAST+ is not installed.")
+
 ## check if blast is correctly installed
 expect_false(all(Sys.which("makeblastdb") == ""))
 expect_false(all(Sys.which("blastn") == ""))

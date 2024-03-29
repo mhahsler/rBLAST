@@ -47,6 +47,9 @@ the command line tool.
 ## check if makeblastdb is correctly installed
 Sys.which("makeblastdb")
 
+## only run if blast is installed
+if (has_blast()){
+
 ## see possible arguments
 blast_help("makeblastdb")
 
@@ -72,12 +75,13 @@ predict(db, seq[1])
 unlink("seqs.fasta")
 unlink("db", recursive = TRUE)
 }
+}
 \references{
 BLAST+
 \url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download}
 }
 \seealso{
-[\code{\link[=blast]{blast()}} for opening and searching BLAST databases.
+\code{\link[=blast]{blast()}} for opening and searching BLAST databases.
 }
 \author{
 Michael Hahsler

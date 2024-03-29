@@ -22,22 +22,33 @@
 #' Open a BLAST database and execute blastn from blast+ to find sequences
 #' matches.
 #'
-#' The BLAST+ software has to be installed:
-#' *  Linux (e.g., Debian/Ubuntu) install package: `ncbi-blast+`
-#' *  Windows or OS X install the software from
-#'     \url{https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/}.
+#' The BLAST+ software needs to be installed on your system. The software for
+#' different operating systems is available at:
+#'   https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
 #'
-#' R needs to be able to find the executable (mostly an issue with Windows).
-#' Try `Sys.which("blastn")` to see if the program is properly installed.
-#' If not, then you probably need to set the environment variable called `PATH`
-#' using something like `Sys.setenv(PATH = paste(Sys.getenv("PATH"),
-#' "path_to_BLAST", sep= .Platform$path.sep))`. You can use
-#' `Sys.getenv("PATH")` first to see what is currently in the search path.
+#' A precombiled software package is already available for many Linux distributions.
+#' The package is typically called ⁠ncbi-blast+. For example, in Debian/Ubuntu, the
+#' package can be installed using the APT package manager: `apt-get install ncbi-blast+`
+#'
+#' R needs to be able to find the executable. This is mostly only an issue with
+#' Windows. After installing the software, try in R
+#'
+#' ```
+#' Sys.which("blastn")
+#' ```
+#'
+#' to see if
+#' the program can be found. If the command returns `""` instead of the path to the
+#' executable, then you need to set the environment variable called `PATH`. In R
+#'
+#' ```
+#' Sys.setenv(PATH = paste(Sys.getenv("PATH"), "path_to_BLAST",
+#'                         sep = .Platform$path.sep
+#' ))
+#' ```
 #'
 #' You will also need a database. NCBI BLAST databases are updated daily and
 #' may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
-#'
-#' Custom output format. If no custom format is specified, then
 #'
 #' @name blast
 #' @aliases blast BLAST
@@ -56,9 +67,13 @@
 #' @param keep_tmp logical; keep temporary files for debugging.
 #' @param info show additional data base information.
 #' @param ...  additional arguments are ignored.
-#' @return `blast()` returns a BLAST database object which can be used for
-#' queries (via `predict`). `predict` returns a data.frame containing
+#' @return
+#' * `blast()` returns a BLAST database object which can be used for
+#' queries (via `predict`).
+#' * `predict` returns a data.frame containing
 #' the BLAST results.
+#' * `has_blast()` returns `TRUE` if the blast software installation can be
+#' found and `FASLE` otherwise.
 #' @author Michael Hahsler
 #' @seealso [makeblastdb] for creating custom BLAST databases from
 #' FASTA files.
@@ -71,6 +86,9 @@
 #' @examples
 #' ## check if blastn is correctly installed
 #' Sys.which("blastn")
+#'
+#' ## only run if blast is installed
+#' if (has_blast()) {
 #'
 #' ## check version you should have version 1.8.1+
 #' system2("blastn", "-version")
@@ -113,6 +131,7 @@
 #'     custom_format = fmt
 #' )
 #' cl
+#' }
 #' @importFrom utils read.table
 #' @importFrom methods is
 #' @import Biostrings
@@ -294,3 +313,8 @@ predict.BLAST <-
 
         cl_tab
     }
+
+#' @rdname blast
+#' @export
+has_blast <- function() length(.findExecutable("blastn",
+    interactive = FALSE)) != 0
