@@ -33,12 +33,9 @@ Other R interfaces for bioinformatics are also available:
     install.packages("rBLAST", repos = "https://mhahsler.r-universe.dev")
     ```
 
-3.  Install the BLAST software by following the instructions found in
-
-    ``` r
-    library("rBLAST")
-    help("blast")
-    ```
+3.  Install the BLAST software by following the instructions in the
+    [INSTALL](https://github.com/mhahsler/rBLAST/blob/devel/INSTALL)
+    file.
 
 ## Usage
 
@@ -75,7 +72,7 @@ bl
     ## Volumes:
     ##  /home/hahsler/baR/rBLAST/16S_rRNA_DB/16S_ribosomal_RNA
 
-Load some test sequences cgipped with the package.
+Load some test sequences shipped with the package.
 
 ``` r
 seq <- readRNAStringSet(system.file("examples/RNA_example.fasta", package = "rBLAST"))

@@ -27,11 +27,8 @@ Other R interfaces for bioinformatics are also available:
    ```{r, eval = FALSE}
 install.packages("rBLAST", repos = "https://mhahsler.r-universe.dev")
    ```
-3. Install the BLAST software by following the instructions found in 
-   ```{r, eval = FALSE}
-library("rBLAST")
-help("blast")
-   ```
+3. Install the BLAST software by following the instructions in the 
+[INSTALL](https://github.com/mhahsler/rBLAST/blob/devel/INSTALL) file.
 
 ## Usage
 
