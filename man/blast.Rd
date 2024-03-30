@@ -9,7 +9,7 @@
 \alias{has_blast}
 \title{Basic Local Alignment Search Tool (BLAST)}
 \usage{
-blast(db = NULL, type = "blastn")
+blast(db = NULL, remote = FALSE, type = "blastn")
 
 blast_help(type = "blastn")
 
@@ -29,6 +29,9 @@ has_blast()
 }
 \arguments{
 \item{db}{the database file to be searched (without file extension).}
+
+\item{remote}{logical execute the query remotely on the NCBI server. \code{db}
+needs to be the name of a database available in the server.}
 
 \item{type}{BLAST program to use (e.g., \code{blastn}, \code{blastp}, \code{blastx}).}
 
@@ -57,7 +60,7 @@ queries (via \code{predict}).
 \item \code{predict} returns a data.frame containing
 the BLAST results.
 \item \code{has_blast()} returns \code{TRUE} if the blast software installation can be
-found and \code{FASLE} otherwise.
+found and \code{FALSE} otherwise.
 }
 }
 \description{
@@ -89,7 +92,8 @@ executable, then you need to set the environment variable called \code{PATH}. In
 }\if{html}{\out{</div>}}
 
 You will also need a database. NCBI BLAST databases are updated daily and
-may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
+may be downloaded via FTP from https://ftp.ncbi.nlm.nih.gov/blast/db/. See
+\code{\link[=blast_db_cache]{blast_db_cache()}} on how to manage a local cache of database files.
 }
 \examples{
 ## check if blastn is correctly installed
@@ -97,62 +101,69 @@ Sys.which("blastn")
 
 ## only run if blast is installed
 if (has_blast()) {
+    ## check version you should have version 1.8.1+
+    system2("blastn", "-version")
 
-## check version you should have version 1.8.1+
-system2("blastn", "-version")
+    ## download and extract the 16S Microbial rRNA data base from NCBI
+    tgz_file <- blast_db_get("16S_ribosomal_RNA.tar.gz")
+    untar(tgz_file, exdir = "16S_rRNA_DB")
 
-## download the 16S Microbial rRNA data base from NCBI
-if (!file.exists("16S_rRNA_DB")) {
-    download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
-        "16S_ribosomal_RNA.tar.gz",
-        mode = "wb"
+    ## Note the database file can also downloaded without using a
+    ##    cache using download.file
+    # download.file(paste("https://ftp.ncbi.nlm.nih.gov/blast/db",
+    #    "16S_ribosomal_RNA.tar.gz", sep = "/"),
+    #    "16S_ribosomal_RNA.tar.gz", mode = "wb")
+    # untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
+
+    ## A BLAST database is just a set of files. It is a good idea to
+    ## organize the files in a directory.
+    list.files("./16S_rRNA_DB")
+
+    ## load a BLAST database (replace db with the location + name of
+    ##   the BLAST DB without the extension)
+    bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
+    bl
+
+    ## read a single example sequence to BLAST
+    seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+        package = "rBLAST"
+    ))[1]
+    seq
+
+    ## query a sequence using BLAST
+    cl <- predict(bl, seq)
+    cl[1:5, ]
+
+    ## Pass on BLAST arguments (99\% identity) and use a custom format
+    ## (see BLAST documentation)
+    fmt <- paste(
+        "qaccver saccver pident length mismatch gapopen qstart qend",
+        "sstart send evalue bitscore qseq sseq"
     )
-    untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
-}
+    cl <- predict(bl, seq,
+        BLAST_args = "-perc_identity 99",
+        custom_format = fmt
+    )
+    cl
 
-## load a BLAST database (replace db with the location + name of
-## the BLAST DB without the extension)
-list.files("./16S_rRNA_DB/")
-bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
-bl
-
-print(bl, info = TRUE)
-
-## read a single example sequence to BLAST
-seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-    package = "rBLAST"
-))[1]
-seq
-
-## query a sequence using BLAST
-cl <- predict(bl, seq)
-cl[1:5, ]
-
-## Pass on BLAST arguments (99\% identity) and use a custom format
-## (see BLAST documentation)
-fmt <- paste(
-    "qaccver saccver pident length mismatch gapopen qstart qend",
-    "sstart send evalue bitscore qseq sseq"
-)
-cl <- predict(bl, seq,
-    BLAST_args = "-perc_identity 99",
-    custom_format = fmt
-)
-cl
+    ## cleanup: delete the database files
+    unlink("./16S_rRNA_DB", recursive = TRUE)
 }
 }
 \references{
 BLAST Help - BLAST+ Executable:
-\url{https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html}
+https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html
 
 BLAST Command Line Applications User Manual,
-\url{https://www.ncbi.nlm.nih.gov/books/NBK279690/}
+https://www.ncbi.nlm.nih.gov/books/NBK279690/
 }
 \seealso{
-\link{makeblastdb} for creating custom BLAST databases from
-FASTA files.
+Other blast: 
+\code{\link{blast_db_cache}()},
+\code{\link{makeblastdb}()}
 }
 \author{
 Michael Hahsler
 }
+\concept{blast}
 \keyword{model}

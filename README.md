@@ -43,34 +43,35 @@ Other R interfaces for bioinformatics are also available:
 library(rBLAST)
 ```
 
-Download the 16S Microbial data base from NCBI.
+Download the 16S Microbial data base from NCBI’s ftp server at:
+<https://ftp.ncbi.nlm.nih.gov/blast/db/>
 
 ``` r
-download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz", "16S_ribosomal_RNA.tar.gz",
-    mode = "wb")
-
-untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
+db <- get_blast_db("16S_ribosomal_RNA")
+db
 ```
+
+    ## [1] "/home/hahsler/.cache/R/rBLAST/16S_ribosomal_RNA/16S_ribosomal_RNA"
 
 Load the downloaded BLAST database.
 
 ``` r
-bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
+bl <- blast(db = db)
 bl
 ```
 
     ## BLAST Database
-    ## Location: /home/hahsler/baR/rBLAST/16S_rRNA_DB/16S_ribosomal_RNA 
+    ## Location: /home/hahsler/.cache/R/rBLAST/16S_ribosomal_RNA/16S_ribosomal_RNA 
     ## BLAST Type: blastn 
     ## Database: 16S ribosomal RNA (Bacteria and Archaea type strains)
-    ##  22,239 sequences; 32,329,036 total bases
+    ##  22,242 sequences; 32,333,479 total bases
     ## 
-    ## Date: Mar 12, 2024  5:36 AM  Longest sequence: 3,600 bases
+    ## Date: Mar 26, 2024  5:36 AM  Longest sequence: 3,600 bases
     ## 
     ## BLASTDB Version: 5
     ## 
     ## Volumes:
-    ##  /home/hahsler/baR/rBLAST/16S_rRNA_DB/16S_ribosomal_RNA
+    ##  /home/hahsler/.cache/R/rBLAST/16S_ribosomal_RNA/16S_ribosomal_RNA
 
 Load some test sequences shipped with the package.
 

@@ -48,42 +48,44 @@ the command line tool.
 Sys.which("makeblastdb")
 
 ## only run if blast is installed
-if (has_blast()){
+if (has_blast()) {
+    ## see possible arguments
+    blast_help("makeblastdb")
 
-## see possible arguments
-blast_help("makeblastdb")
+    ## read some example sequences
+    seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+        package = "rBLAST"
+    ))
 
-## read some example sequences
-seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-    package = "rBLAST"
-))
+    ## 1. write the FASTA file
+    writeXStringSet(seq, filepath = "seqs.fasta")
 
-## 1. write the FASTA file
-writeXStringSet(seq, filepath = "seqs.fasta")
+    ## 2. make database
+    makeblastdb(file = "seqs.fasta", db_name = "db/small", dbtype = "nucl")
 
-## 2. make database
-makeblastdb(file = "seqs.fasta", db_name = "db/small", dbtype = "nucl")
+    ## 3. open database
+    db <- blast("db/small")
+    db
 
-## 3. open database
-db <- blast("db/small")
-db
+    ## 4. perform search (first sequence in the db should be a perfect match)
+    predict(db, seq[1])
 
-## 4. perform search (first sequence in the db should be a perfect match)
-predict(db, seq[1])
-
-## clean up
-unlink("seqs.fasta")
-unlink("db", recursive = TRUE)
+    ## clean up
+    unlink("seqs.fasta")
+    unlink("db", recursive = TRUE)
 }
 }
 \references{
 BLAST+
-\url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download}
+https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html
 }
 \seealso{
-\code{\link[=blast]{blast()}} for opening and searching BLAST databases.
+Other blast: 
+\code{\link{blast}()},
+\code{\link{blast_db_cache}()}
 }
 \author{
 Michael Hahsler
 }
+\concept{blast}
 \keyword{model}

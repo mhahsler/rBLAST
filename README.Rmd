@@ -36,21 +36,17 @@ install.packages("rBLAST", repos = "https://mhahsler.r-universe.dev")
 library(rBLAST)
 ```
 
-Download the 16S Microbial data base from NCBI.
+Download the prebuilt 16S Microbial data base from NCBI's ftp server at:
+https://ftp.ncbi.nlm.nih.gov/blast/db/
 
-```{r, eval = FALSE}
-download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
-    "16S_ribosomal_RNA.tar.gz",
-    mode = "wb"
-)
-
-untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
+```{r}
+db <- get_blast_db("16S_ribosomal_RNA")
+db
 ```
 
 Load the downloaded BLAST database.
-
 ```{r}
-bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
+bl <- blast(db = db)
 bl
 ```
 

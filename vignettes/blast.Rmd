@@ -77,21 +77,17 @@ Sys.setenv(PATH = paste(Sys.getenv("PATH"), "path_to_BLAST",
 ## Use an existing database
 
 You can download pretrained databases from NCBI at https://ftp.ncbi.nlm.nih.gov/blast/db/. 
-Here we  download the 16S rRNA database.
+Here we  download the 16S rRNA database. To avoid multiple downloads of the same file, we
+use BiocFileCache in function `blast_db_cache` for download. The database compressed and 
+needs to be expanded.
 
 ```{r, eval=run}
 ## download the 16S Microbial rRNA data base from NCBI
-if (!file.exists("16S_rRNA_DB")) {
-    download.file(paste0("https://ftp.ncbi.nlm.nih.gov/blast/db/",
-                  "16S_ribosomal_RNA.tar.gz"),
-        "16S_ribosomal_RNA.tar.gz",
-        mode = "wb"
-    )
-    untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
-}
+tgz_file <- blast_db_get("16S_ribosomal_RNA.tar.gz")
+untar(tgz_file, exdir = "16S_rRNA_DB")
 ```
 
-A database consists of a folder with a set of database files.
+The extracted database consists of a folder with a set of database files.
 
 ```{r, eval=run}
 list.files("./16S_rRNA_DB/")
@@ -138,6 +134,12 @@ cl <- predict(bl, seq,
     custom_format = fmt
 )
 cl
+```
+
+
+```{r, include = FALSE, eval=run}
+## clean up
+unlink("16S_rRNA_DB", recursive = TRUE)
 ```
 
 ## Create a custom BLAST database

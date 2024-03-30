@@ -48,15 +48,19 @@
 #' ```
 #'
 #' You will also need a database. NCBI BLAST databases are updated daily and
-#' may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
+#' may be downloaded via FTP from https://ftp.ncbi.nlm.nih.gov/blast/db/. See
+#' [blast_db_cache()] on how to manage a local cache of database files.
 #'
 #' @name blast
 #' @aliases blast BLAST
+#' @family blast
 #' @param db the database file to be searched (without file extension).
 #' @param type BLAST program to use (e.g., `blastn`, `blastp`, `blastx`).
 #' @param object,x An open BLAST database as a BLAST object created
 #' with [blast()].
 #' @param newdata the query as an object of class [XStringSet].
+#' @param remote logical execute the query remotely on the NCBI server. `db`
+#'  needs to be the name of a database available in the server.
 #' @param BLAST_args additional arguments in command-line style.
 #' @param custom_format custom format specified by space delimited format
 #' specifiers.
@@ -73,15 +77,13 @@
 #' * `predict` returns a data.frame containing
 #' the BLAST results.
 #' * `has_blast()` returns `TRUE` if the blast software installation can be
-#' found and `FASLE` otherwise.
+#' found and `FALSE` otherwise.
 #' @author Michael Hahsler
-#' @seealso [makeblastdb] for creating custom BLAST databases from
-#' FASTA files.
 #' @references BLAST Help - BLAST+ Executable:
-#' \url{https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html}
+#' https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html
 #'
 #' BLAST Command Line Applications User Manual,
-#' \url{https://www.ncbi.nlm.nih.gov/books/NBK279690/}
+#' https://www.ncbi.nlm.nih.gov/books/NBK279690/
 #' @keywords model
 #' @examples
 #' ## check if blastn is correctly installed
@@ -89,57 +91,68 @@
 #'
 #' ## only run if blast is installed
 #' if (has_blast()) {
+#'     ## check version you should have version 1.8.1+
+#'     system2("blastn", "-version")
 #'
-#' ## check version you should have version 1.8.1+
-#' system2("blastn", "-version")
+#'     ## download and extract the 16S Microbial rRNA data base from NCBI
+#'     tgz_file <- blast_db_get("16S_ribosomal_RNA.tar.gz")
+#'     untar(tgz_file, exdir = "16S_rRNA_DB")
 #'
-#' ## download the 16S Microbial rRNA data base from NCBI
-#' if (!file.exists("16S_rRNA_DB")) {
-#'     download.file("https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz",
-#'         "16S_ribosomal_RNA.tar.gz",
-#'         mode = "wb"
+#'     ## Note the database file can also downloaded without using a
+#'     ##    cache using download.file
+#'     # download.file(paste("https://ftp.ncbi.nlm.nih.gov/blast/db",
+#'     #    "16S_ribosomal_RNA.tar.gz", sep = "/"),
+#'     #    "16S_ribosomal_RNA.tar.gz", mode = "wb")
+#'     # untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
+#'
+#'     ## A BLAST database is just a set of files. It is a good idea to
+#'     ## organize the files in a directory.
+#'     list.files("./16S_rRNA_DB")
+#'
+#'     ## load a BLAST database (replace db with the location + name of
+#'     ##   the BLAST DB without the extension)
+#'     bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
+#'     bl
+#'
+#'     ## read a single example sequence to BLAST
+#'     seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+#'         package = "rBLAST"
+#'     ))[1]
+#'     seq
+#'
+#'     ## query a sequence using BLAST
+#'     cl <- predict(bl, seq)
+#'     cl[1:5, ]
+#'
+#'     ## Pass on BLAST arguments (99% identity) and use a custom format
+#'     ## (see BLAST documentation)
+#'     fmt <- paste(
+#'         "qaccver saccver pident length mismatch gapopen qstart qend",
+#'         "sstart send evalue bitscore qseq sseq"
 #'     )
-#'     untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
-#' }
+#'     cl <- predict(bl, seq,
+#'         BLAST_args = "-perc_identity 99",
+#'         custom_format = fmt
+#'     )
+#'     cl
 #'
-#' ## load a BLAST database (replace db with the location + name of
-#' ## the BLAST DB without the extension)
-#' list.files("./16S_rRNA_DB/")
-#' bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
-#' bl
-#'
-#' print(bl, info = TRUE)
-#'
-#' ## read a single example sequence to BLAST
-#' seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-#'     package = "rBLAST"
-#' ))[1]
-#' seq
-#'
-#' ## query a sequence using BLAST
-#' cl <- predict(bl, seq)
-#' cl[1:5, ]
-#'
-#' ## Pass on BLAST arguments (99% identity) and use a custom format
-#' ## (see BLAST documentation)
-#' fmt <- paste(
-#'     "qaccver saccver pident length mismatch gapopen qstart qend",
-#'     "sstart send evalue bitscore qseq sseq"
-#' )
-#' cl <- predict(bl, seq,
-#'     BLAST_args = "-perc_identity 99",
-#'     custom_format = fmt
-#' )
-#' cl
+#'     ## cleanup: delete the database files
+#'     unlink("./16S_rRNA_DB", recursive = TRUE)
 #' }
 #' @importFrom utils read.table
 #' @importFrom methods is
 #' @import Biostrings
 #' @export
-blast <- function(db = NULL, type = "blastn") {
+blast <- function(db = NULL, remote = FALSE, type = "blastn") {
     if (is.null(db)) {
         stop("No BLAST database specified!")
     }
+
+    if (remote) {
+        return(structure(list(db = db, type = type, remote = TRUE),
+                         class = "BLAST"))
+    }
+
     db <- file.path(normalizePath(dirname(db)), basename(db))
     dbfiles <- Sys.glob(paste0(db, "*"))
     if (length(dbfiles) < 1) {
@@ -170,7 +183,7 @@ blast <- function(db = NULL, type = "blastn") {
         stop("Problem loading the database! (trying to execute: blastdbcmd)")
     }
 
-    structure(list(db = db, type = type), class = "BLAST")
+    structure(list(db = db, remote = FALSE, type = type), class = "BLAST")
 }
 
 #' @rdname blast
@@ -210,6 +223,10 @@ predict.BLAST <-
              keep_tmp = FALSE,
              ...) {
         db <- object$db
+        remote <- object$remote
+        if (is.null(remote)) {
+            remote <- FALSE
+        }
         exe <- object$type
         x <- newdata
 
@@ -243,6 +260,7 @@ predict.BLAST <-
         args <- c(
             "-db",
             db,
+            ifelse(remote, "-remote", ""),
             "-query",
             infile,
             "-out",
@@ -316,5 +334,8 @@ predict.BLAST <-
 
 #' @rdname blast
 #' @export
-has_blast <- function() length(.findExecutable("blastn",
-    interactive = FALSE)) != 0
+has_blast <- function() {
+    length(.findExecutable("blastn",
+        interactive = FALSE
+    )) != 0
+}

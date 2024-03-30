@@ -28,6 +28,7 @@
 #' Arguments need to be formated in exactly the way as they would be used for
 #' the command line tool.
 #'
+#' @family blast
 #' @param file input file/database name. **Note** that the filename and path
 #' cannot contain whitespaces.
 #' @param dbtype molecule type of target db (`"nucl"` or `"prot"`).
@@ -37,9 +38,8 @@
 #'     to `makeblastdb`.
 #' @param verbose logical; show the progress report produced by `makeblastdb`?
 #' @author Michael Hahsler
-#' @seealso [blast()] for opening and searching BLAST databases.
 #' @references BLAST+
-#' \url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download}
+#' https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html
 #' @returns Nothing
 #' @keywords model
 #' @examples
@@ -47,32 +47,31 @@
 #' Sys.which("makeblastdb")
 #'
 #' ## only run if blast is installed
-#' if (has_blast()){
+#' if (has_blast()) {
+#'     ## see possible arguments
+#'     blast_help("makeblastdb")
 #'
-#' ## see possible arguments
-#' blast_help("makeblastdb")
+#'     ## read some example sequences
+#'     seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+#'         package = "rBLAST"
+#'     ))
 #'
-#' ## read some example sequences
-#' seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-#'     package = "rBLAST"
-#' ))
+#'     ## 1. write the FASTA file
+#'     writeXStringSet(seq, filepath = "seqs.fasta")
 #'
-#' ## 1. write the FASTA file
-#' writeXStringSet(seq, filepath = "seqs.fasta")
+#'     ## 2. make database
+#'     makeblastdb(file = "seqs.fasta", db_name = "db/small", dbtype = "nucl")
 #'
-#' ## 2. make database
-#' makeblastdb(file = "seqs.fasta", db_name = "db/small", dbtype = "nucl")
+#'     ## 3. open database
+#'     db <- blast("db/small")
+#'     db
 #'
-#' ## 3. open database
-#' db <- blast("db/small")
-#' db
+#'     ## 4. perform search (first sequence in the db should be a perfect match)
+#'     predict(db, seq[1])
 #'
-#' ## 4. perform search (first sequence in the db should be a perfect match)
-#' predict(db, seq[1])
-#'
-#' ## clean up
-#' unlink("seqs.fasta")
-#' unlink("db", recursive = TRUE)
+#'     ## clean up
+#'     unlink("seqs.fasta")
+#'     unlink("db", recursive = TRUE)
 #' }
 #' @export
 makeblastdb <- function(file, db_name = NULL, dbtype = "nucl",

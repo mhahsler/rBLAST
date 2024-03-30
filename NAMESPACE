@@ -3,6 +3,8 @@
 S3method(predict,BLAST)
 S3method(print,BLAST)
 export(blast)
+export(blast_db_cache)
+export(blast_db_get)
 export(blast_help)
 export(has_blast)
 export(makeblastdb)

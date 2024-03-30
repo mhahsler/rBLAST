@@ -22,7 +22,7 @@ expect_true(dir.exists(dir))
 
 ## 3. open database
 db <- blast(file.path(dir, "seqs.fasta"))
-#db
+# db
 
 
 ## 4. perform search (first sequence in the db should be a perfect match)

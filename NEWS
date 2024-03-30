@@ -1,0 +1,8 @@
+rBLAST 0.99.2 (Release date: 2024-03-30)
+==============
+
+Changes:
+* makeblastDB() gained parameters db_name, hash_index and verbose.
+* added has_blast() and made tests, man page code and vignette code conditional.
+* added blast_db_cache() and blast_db_get() to manage downloading BLAST DBs
+  using BiocFileCache.
