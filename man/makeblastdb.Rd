@@ -29,7 +29,7 @@ to \code{makeblastdb}.}
 \item{verbose}{logical; show the progress report produced by \code{makeblastdb}?}
 }
 \value{
-Nothing
+Nothing but creates a BLAST database directory.
 }
 \description{
 Call the \code{makeblastdb} utility to create a BLAST database from a FASTA file.
@@ -74,10 +74,6 @@ if (has_blast()) {
     unlink("seqs.fasta")
     unlink("db", recursive = TRUE)
 }
-}
-\references{
-BLAST+
-https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html
 }
 \seealso{
 Other blast: 

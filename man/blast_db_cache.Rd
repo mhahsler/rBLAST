@@ -31,7 +31,7 @@ file.
 \description{
 Use \link{BiocFileCache} to manage local copies of BLAST database downloads.
 NCBI BLAST databases are updated daily and
-may be downloaded via FTP from https://ftp.ncbi.nlm.nih.gov/blast/db/.
+may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 }
 \examples{
 library(BiocFileCache)

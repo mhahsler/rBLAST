@@ -70,11 +70,14 @@ matches.
 \details{
 The BLAST+ software needs to be installed on your system. The software for
 different operating systems is available at:
-https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+\url{https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/}
 
 A precombiled software package is already available for many Linux distributions.
 The package is typically called ⁠ncbi-blast+. For example, in Debian/Ubuntu, the
-package can be installed using the APT package manager: \verb{apt-get install ncbi-blast+}
+package can be installed using the APT package manager:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{apt-get install ncbi-blast+
+}\if{html}{\out{</div>}}
 
 R needs to be able to find the executable. This is mostly only an issue with
 Windows. After installing the software, try in R

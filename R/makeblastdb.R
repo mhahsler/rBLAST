@@ -38,9 +38,7 @@
 #'     to `makeblastdb`.
 #' @param verbose logical; show the progress report produced by `makeblastdb`?
 #' @author Michael Hahsler
-#' @references BLAST+
-#' https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html
-#' @returns Nothing
+#' @returns Nothing but creates a BLAST database directory.
 #' @keywords model
 #' @examples
 #' ## check if makeblastdb is correctly installed
