@@ -22,10 +22,15 @@
 #' NCBI BLAST databases are updated daily and
 #' may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 #'
+#' The package maintains its own local cache which can be accessed using
+#' `blast_db_cache()`.
+#'
 #' @family blast
 #' @param file the filename of the database.
 #' @param baseURL URL to download blast databases from. The default is NCBI's
-#' ftp server.
+#'  ftp server.
+#' @param check_update logical; update the local cache if there is a newer
+#'    version of the file available on the server. This may take some time.
 #' @param verbose logical; display download information.
 #' @returns
 #' * `blast_db_cache()` returns the path to the local [BiocFileCache] cache.
@@ -34,18 +39,20 @@
 
 #' @author Michael Hahsler
 #' @examples
-#' library(BiocFileCache)
-#'
-#' ## show the package's cache directory
-#' cache <- blast_db_cache()
-#' cache
-#'
-#' ## get a database file (will be downloaded the first time)
+#' ## get a database file (will be downloaded if the
+#' ##     local copy is not up-to-date)
 #' db_16S <- blast_db_get("16S_ribosomal_RNA.tar.gz")
 #' db_16S
 #'
+#' ## directly interacting with the local cache
+#' library(BiocFileCache)
+#'
+#' ## show the package's cache directory
+#' local_cache <- blast_db_cache()
+#' local_cache
+#'
 #' ## bfc functions can be used to manage the local cache
-#' bfcinfo(cache)
+#' bfcinfo(local_cache)
 #' @export
 blast_db_cache <-
     function() {
@@ -58,6 +65,7 @@ blast_db_cache <-
 blast_db_get <-
     function(file = "16S_ribosomal_RNA.tar.gz",
              baseURL = "https://ftp.ncbi.nlm.nih.gov/blast/db/",
+             check_update = TRUE,
              verbose = TRUE) {
         fileURL <-
             paste0("https://ftp.ncbi.nlm.nih.gov/blast/db/", file)
@@ -66,16 +74,17 @@ blast_db_get <-
         rid <-
             BiocFileCache::bfcquery(bfc, file, "rname")$rid
         if (!length(rid)) {
-            if (verbose) {
-                message("Downloading ", file)
-            }
             rid <-
                 names(BiocFileCache::bfcadd(bfc, file, fileURL))
         }
 
-        if (!isFALSE(BiocFileCache::bfcneedsupdate(bfc, rid))) {
+        if (check_update && !isFALSE(BiocFileCache::bfcneedsupdate(bfc, rid))) {
+            if (verbose)
+                message("Downloading latest version of ", file)
             BiocFileCache::bfcdownload(bfc, rid)
-        }
+        } else
+            if (verbose)
+                message("Returning local copy of ", file)
 
         BiocFileCache::bfcrpath(bfc, rids = rid)
     }

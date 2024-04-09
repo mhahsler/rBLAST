@@ -19,41 +19,31 @@
 
 #' Basic Local Alignment Search Tool (BLAST)
 #'
-#' Open a BLAST database and execute blastn from blast+ to find sequences
-#' matches.
+#' Open a BLAST database and execute blastn (blastp or blastx)
+#' from blast+ to find sequences matches.
 #'
-#' The BLAST+ software needs to be installed on your system. The software for
-#' different operating systems is available at:
-#'   \url{https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/}
+#' # Installing BLAST+
+#' The BLAST+ software needs to be installed on your system. Installation
+#' instructions are available in this package's
+#' [INSTALL](https://github.com/mhahsler/rBLAST/blob/devel/INSTALL) file and
+#' at \url{https://www.ncbi.nlm.nih.gov/books/NBK569861/}.
 #'
-#' A precombiled software package is already available for many Linux distributions.
-#' The package is typically called ⁠ncbi-blast+. For example, in Debian/Ubuntu, the
-#' package can be installed using the APT package manager:
-#' ```
-#' apt-get install ncbi-blast+
-#' ```
-#'
-#' R needs to be able to find the executable. This is mostly only an issue with
-#' Windows. After installing the software, try in R
-#'
+#' R needs to be able to find the executable. After installing the software,
+#' try in R
 #' ```
 #' Sys.which("blastn")
 #' ```
 #'
-#' to see if
-#' the program can be found. If the command returns `""` instead of the path to the
-#' executable, then you need to set the environment variable called `PATH`. In R
-#'
+#' If the command returns "" instead of the path to the executable,
+#' then you need to set the environment variable called PATH. In R
 #' ```
-#' Sys.setenv(PATH = paste(Sys.getenv("PATH"), "path_to_BLAST",
-#'                         sep = .Platform$path.sep
-#' ))
+#' Sys.setenv(PATH = paste(Sys.getenv("PATH"),
+#'    "path_to_your_BLAST_installation", sep=.Platform$path.sep))
 #' ```
-#'
+#' # BLAST Databases
 #' You will also need a database. NCBI BLAST databases are updated daily and
-#' may be downloaded via FTP from https://ftp.ncbi.nlm.nih.gov/blast/db/. See
-#' [blast_db_cache()] on how to manage a local cache of database files.
-#'
+#' may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
+#' See [blast_db_cache()] on how to manage a local cache of database files.
 #' @name blast
 #' @aliases blast BLAST
 #' @family blast
@@ -89,7 +79,8 @@
 #' https://www.ncbi.nlm.nih.gov/books/NBK279690/
 #' @keywords model
 #' @examples
-#' ## check if blastn is correctly installed
+#' ## check if blastn is correctly installed. Should return the path to the
+#' ##   executable
 #' Sys.which("blastn")
 #'
 #' ## only run if blast is installed
@@ -97,16 +88,19 @@
 #'     ## check version you should have version 1.8.1+
 #'     system2("blastn", "-version")
 #'
-#'     ## download and extract the 16S Microbial rRNA data base from NCBI
+#'     ## download the latest version of the 16S Microbial
+#'     ##  rRNA data base from NCBI using the local chache
 #'     tgz_file <- blast_db_get("16S_ribosomal_RNA.tar.gz")
-#'     untar(tgz_file, exdir = "16S_rRNA_DB")
+#'
+#'     ## extract the database files
+#'     untar(tgz_file, exdir = "./16S_rRNA_DB")
 #'
 #'     ## Note the database file can also downloaded without using a
 #'     ##    cache using download.file
 #'     # download.file(paste("https://ftp.ncbi.nlm.nih.gov/blast/db",
 #'     #    "16S_ribosomal_RNA.tar.gz", sep = "/"),
 #'     #    "16S_ribosomal_RNA.tar.gz", mode = "wb")
-#'     # untar("16S_ribosomal_RNA.tar.gz", exdir = "16S_rRNA_DB")
+#'     # untar("16S_ribosomal_RNA.tar.gz", exdir = "./16S_rRNA_DB")
 #'
 #'     ## A BLAST database is just a set of files. It is a good idea to
 #'     ## organize the files in a directory.
@@ -139,7 +133,7 @@
 #'     )
 #'     cl
 #'
-#'     ## cleanup: delete the database files
+#'     ## cleanup the example: delete the database files
 #'     unlink("./16S_rRNA_DB", recursive = TRUE)
 #' }
 #' @importFrom utils read.table

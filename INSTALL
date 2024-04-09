@@ -1,19 +1,40 @@
 Installation Instructions for Package rBLAST
 
 1. Install BLAST+
-The BLAST+ software needs to be installed on your system. The software for
-different operating systems is available at:
-    https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+    The BLAST+ software needs to be installed on your system. The official
+    installation instructions for different plattforms are available at
+    https://www.ncbi.nlm.nih.gov/books/NBK569861/
 
-A precombiled software package is already available for many Linux distributions.
-The package is typically called ⁠ncbi-blast+. For example in Debian/Ubuntu, the
-package can be installed using the APT package manager:
+    Windows
+    -------
+    Follow the instructions at https://www.ncbi.nlm.nih.gov/books/NBK52637/
+
+    Linux/Unix
+    ----------
+    Precombiled software package are already available for many Linux
+    distributions. The package is typically called ⁠ncbi-blast+. For example
+    on Debian/Ubuntu, the package can be installed using the APT
+    package manager:
     apt-get install ncbi-blast+
 
-2. Setting the Path Environment Variable
-R needs to be able to find the executable. This is mostly only an issue with
-Windows. After installing the software, try in R Sys.which("blastn") to see if
-the program can be found. If the command returns "" instead of the path to the
-executable, then you need to set the environment variable called PATH. In R
+    MacOSX
+    ------
+    The easiest approach is to use the .dmg installer file from
+    https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+
+
+2. Checking that the path environment variables are correctly set
+    R needs to be able to find the executable. The installers for LINUX/Unix
+    and MacOSX set the correct values, so this is is mostly only an issue
+    with Windows. After installing the software, try in R
+    > Sys.which("blastn")
+
+    If the command returns "" instead of
+    the path to the executable, then you need to set the environment variable
+    called PATH. In R
     Sys.setenv(PATH = paste(Sys.getenv("PATH"),
         "path_to_your_BLAST_installation", sep=.Platform$path.sep))
+
+    More details about setting the environment variables permanently can be
+    found in the Windows installation guide at
+    https://www.ncbi.nlm.nih.gov/books/NBK52637/

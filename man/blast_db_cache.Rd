@@ -10,6 +10,7 @@ blast_db_cache()
 blast_db_get(
   file = "16S_ribosomal_RNA.tar.gz",
   baseURL = "https://ftp.ncbi.nlm.nih.gov/blast/db/",
+  check_update = TRUE,
   verbose = TRUE
 )
 }
@@ -18,6 +19,9 @@ blast_db_get(
 
 \item{baseURL}{URL to download blast databases from. The default is NCBI's
 ftp server.}
+
+\item{check_update}{logical; update the local cache if there is a newer
+version of the file available on the server. This may take some time.}
 
 \item{verbose}{logical; display download information.}
 }
@@ -33,19 +37,25 @@ Use \link{BiocFileCache} to manage local copies of BLAST database downloads.
 NCBI BLAST databases are updated daily and
 may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 }
+\details{
+The package maintains its own local cache which can be accessed using
+\code{blast_db_cache()}.
+}
 \examples{
-library(BiocFileCache)
-
-## show the package's cache directory
-cache <- blast_db_cache()
-cache
-
-## get a database file (will be downloaded the first time)
+## get a database file (will be downloaded if the
+##     local copy is not up-to-date)
 db_16S <- blast_db_get("16S_ribosomal_RNA.tar.gz")
 db_16S
 
+## directly interacting with the local cache
+library(BiocFileCache)
+
+## show the package's cache directory
+local_cache <- blast_db_cache()
+local_cache
+
 ## bfc functions can be used to manage the local cache
-bfcinfo(cache)
+bfcinfo(local_cache)
 }
 \seealso{
 Other blast: 
