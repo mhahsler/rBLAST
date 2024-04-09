@@ -40,13 +40,13 @@ Download the prebuilt 16S Microbial data base from NCBI's ftp server at:
 https://ftp.ncbi.nlm.nih.gov/blast/db/
 
 ```{r}
-db <- get_blast_db("16S_ribosomal_RNA")
-db
+tgz_file <- blast_db_get("16S_ribosomal_RNA.tar.gz")
+untar(tgz_file, exdir = "16S_rRNA_DB")
 ```
 
 Load the downloaded BLAST database.
 ```{r}
-bl <- blast(db = db)
+bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
 bl
 ```
 
@@ -65,6 +65,10 @@ with a 99% percent identity or higher.
 ```{r}
 cl <- predict(bl, seq[1, ], BLAST_args = "-perc_identity 99")
 cl
+```
+
+```{r, include=FALSE}
+unlink("./16S_rRNA_DB", recursive = TRUE)
 ```
 
 ## Citation Request

@@ -80,7 +80,8 @@ blast_db_get <-
 
         if (check_update && !isFALSE(BiocFileCache::bfcneedsupdate(bfc, rid))) {
             if (verbose)
-                message("Downloading latest version of ", file)
+                message("Downloading latest version of ", file, " from ",
+                        baseURL)
             BiocFileCache::bfcdownload(bfc, rid)
         } else
             if (verbose)
