@@ -44,6 +44,17 @@
 #' You will also need a database. NCBI BLAST databases are updated daily and
 #' may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 #' See [blast_db_cache()] on how to manage a local cache of database files.
+#'
+#' BLAST databases are a set of database files with different extensions.
+#' All files start with the same database name. For example,
+#' `16S_ribosomal_RNA.tar.gz` contains
+#' files starting with `16S_ribosomal_RNA` which is the database name used
+#' for calling `blast()`.
+#'
+#' Large databases are separated into several archives numbered `00`, `01`, etc.
+#' Download all archives and extract the files in the same directory.
+#' All files will have a common name which is the database name used for calling
+#' `blast()`.
 #' @name blast
 #' @aliases blast BLAST
 #' @family blast

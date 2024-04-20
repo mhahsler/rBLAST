@@ -91,6 +91,17 @@ then you need to set the environment variable called PATH. In R
 You will also need a database. NCBI BLAST databases are updated daily and
 may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 See \code{\link[=blast_db_cache]{blast_db_cache()}} on how to manage a local cache of database files.
+
+BLAST databases are a set of database files with different extensions.
+All files start with the same database name. For example,
+\verb{16S_ribosomal_RNA.tar.gz} contains
+files starting with \verb{16S_ribosomal_RNA} which is the database name used
+for calling \code{blast()}.
+
+Large databases are separated into several archives numbered \code{00}, \code{01}, etc.
+Download all archives and extract the files in the same directory.
+All files will have a common name which is the database name used for calling
+\code{blast()}.
 }
 
 \examples{
