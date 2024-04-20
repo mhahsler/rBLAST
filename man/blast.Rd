@@ -42,7 +42,7 @@ needs to be the name of a database available in the server.}
 \item{object, x}{An open BLAST database as a BLAST object created
 with \code{\link[=blast]{blast()}}.}
 
-\item{newdata}{the query as an object of class \link{XStringSet}.}
+\item{newdata}{the query as an object of class \link[Biostrings:XStringSet-class]{Biostrings::XStringSet}.}
 
 \item{BLAST_args}{additional arguments in command-line style.}
 

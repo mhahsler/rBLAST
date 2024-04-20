@@ -18,7 +18,7 @@
 
 #' Manage BLAST Database Downloads using BioCFileCache
 #'
-#' Use [BiocFileCache] to manage local copies of BLAST database downloads.
+#' Use [BiocFileCache::BiocFileCache] to manage local copies of BLAST database downloads.
 #' NCBI BLAST databases are updated daily and
 #' may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 #'
@@ -33,7 +33,7 @@
 #'    version of the file available on the server. This may take some time.
 #' @param verbose logical; display download information.
 #' @returns
-#' * `blast_db_cache()` returns the path to the local [BiocFileCache] cache.
+#' * `blast_db_cache()` returns the path to the local [BiocFileCache::BiocFileCache] cache.
 #' * `blast_db_get()` returns the file path to a downloaded BLAST database
 #'     file.
 

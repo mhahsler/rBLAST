@@ -27,13 +27,13 @@ version of the file available on the server. This may take some time.}
 }
 \value{
 \itemize{
-\item \code{blast_db_cache()} returns the path to the local \link{BiocFileCache} cache.
+\item \code{blast_db_cache()} returns the path to the local \link[BiocFileCache:BiocFileCache-class]{BiocFileCache::BiocFileCache} cache.
 \item \code{blast_db_get()} returns the file path to a downloaded BLAST database
 file.
 }
 }
 \description{
-Use \link{BiocFileCache} to manage local copies of BLAST database downloads.
+Use \link[BiocFileCache:BiocFileCache-class]{BiocFileCache::BiocFileCache} to manage local copies of BLAST database downloads.
 NCBI BLAST databases are updated daily and
 may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
 }

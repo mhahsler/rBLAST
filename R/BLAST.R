@@ -51,7 +51,7 @@
 #' @param type BLAST program to use (e.g., `blastn`, `blastp`, `blastx`).
 #' @param object,x An open BLAST database as a BLAST object created
 #' with [blast()].
-#' @param newdata the query as an object of class [XStringSet].
+#' @param newdata the query as an object of class [Biostrings::XStringSet].
 #' @param remote logical execute the query remotely on the NCBI server. `db`
 #'  needs to be the name of a database available in the server.
 #' @param BLAST_args additional arguments in command-line style.
