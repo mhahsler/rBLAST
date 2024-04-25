@@ -1,3 +1,10 @@
+rBLAST 0.99.4 (Release date: 2024-04-25)
+==============
+
+Changes:
+* Added description of how to deal with multi-part databases.
+* Fixed package anchors in man pages.
+
 rBLAST 0.99.3 (Release date: 2024-04-09)
 ==============
 

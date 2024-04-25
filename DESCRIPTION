@@ -4,8 +4,8 @@ Description: Seamlessly interfaces the Basic Local Alignment Search Tool
   (BLAST) to search genetic sequence data bases. This work was partially 
   supported by grant no. R21HG005912 from the National Human 
   Genome Research Institute.
-Version: 0.99.3
-Date: 2024-04-09
+Version: 0.99.4
+Date: 2024-04-25
 Authors@R: c(person("Michael", "Hahsler",
                 role = c("aut", "cre"),
                 email = "mhahsler@lyle.smu.edu",
