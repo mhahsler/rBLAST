@@ -1,0 +1,16 @@
+#citation(auto = meta)
+
+bibentry(bibtype = "misc",
+  title = "{rBLAST:} {R} Interface for the Basic Local Alignment Search Tool",
+  author = {
+    c(person("Michael", "Hahsler",
+      email = "mhahsler@lyle.smu.edu",
+      comment = c(ORCID = "0000-0003-2716-1405")
+      ),
+      person("Annurag", "Nagar")
+	)},
+  year = 2024,
+  doi = "10.18129/B9.bioc.rBLAST",
+  note = "R package version 0.99.4",
+  howpublished = "Bioconductor version: Release (3.19)"
+  )

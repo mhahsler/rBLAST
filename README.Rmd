@@ -6,7 +6,7 @@ output: github_document
 pkg <- "rBLAST"
 
 source("https://raw.githubusercontent.com/mhahsler/pkg_helpers/main/pkg_helpers.R")
-pkg_title(pkg)
+pkg_title(pkg, CRAN = FALSE, Bioc = TRUE)
 ```
 
 Interfaces the Basic Local Alignment Search Tool (BLAST) to search genetic sequence data bases with the Bioconductor infrastructure. This includes
@@ -15,20 +15,27 @@ The BLAST software needs to be downloaded and installed separately.
 
 Other R interfaces for bioinformatics are also available:
 
-* [rRDP](https://mhahsler.r-universe.dev/ui#package:rRDP): Interface to the RDP Classifier 
+* [rRDP](https://bioconductor.org/packages/rRDP): Interface to the RDP Classifier 
 * [rMSA](https://mhahsler.r-universe.dev/ui#package:rMSA): Interface for Popular Multiple 
     Sequence Alignment Tools including ClustalW, MAFFT, MUSCLE, and Kalign
 
 
 ## Installation
 
-1. Install the Bioconductor package `Biostrings` following the instructions [here](https://bioconductor.org/packages/release/bioc/html/Biostrings.html).
-2. Install `rBlast` from r-universe using 
-   ```{r, eval = FALSE}
-install.packages("rBLAST", repos = "https://mhahsler.r-universe.dev")
-   ```
-3. Install the BLAST software by following the instructions in the 
+1. Install the BLAST software by following the instructions in the 
 [INSTALL](https://github.com/mhahsler/rBLAST/blob/devel/INSTALL) file.
+
+2. Install the latest version of the R package
+    ```{r eval = FALSE}
+    if (!require("BiocManager", quietly = TRUE)) {
+        install.packages("BiocManager")
+    }
+    
+    # The following initializes usage of Bioc devel
+    BiocManager::install(version='devel')
+    
+    BiocManager::install("rBLAST")
+    ```
 
 ## Usage
 
@@ -73,18 +80,10 @@ unlink("./16S_rRNA_DB", recursive = TRUE)
 
 ## Citation Request
 
-Cite the use of this package as:
-
-> Hahsler M, Nagar A (2019). rBLAST: R Interface for the Basic Local Alignment Search Tool. 
-> R package version 0.99.2, URL: https://github.com/mhahsler/rBLAST.
-
-BibTeX
-```  
-@Manual{,
-    title = {{rBLAST: R Interface for the Basic Local Alignment Search Tool}},
-    author = {Michael Hahsler and Anurag Nagar},
-    year = {2019},
-    note = {R package version 0.99.2},
-    url = {https://github.com/mhahsler/rBLAST}
-  }
+```{r, echo=FALSE, results='asis', comment= ""}
+pkg_citation(pkg)
 ```
+
+## Acknowledgments
+This work was partially supported by grant no. R21HG005912 from the [National Human Genome Research Institute](https://www.genome.gov/).
+
