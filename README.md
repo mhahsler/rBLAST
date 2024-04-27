@@ -1,4 +1,6 @@
 
+<img src="https://bioconductor.org/images/logo/svg/Logo.svg" align="right" />
+
 # R package rBLAST - R Interface for the Basic Local Alignment Search Tool
 
 [![r-universe
