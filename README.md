@@ -17,9 +17,9 @@ Other R interfaces for bioinformatics are also available:
 
 - [rRDP](https://bioconductor.org/packages/rRDP): Interface to the RDP
   Classifier
-- [rMSA](https://mhahsler.r-universe.dev/ui#package:rMSA): Interface for
-  Popular Multiple Sequence Alignment Tools including ClustalW, MAFFT,
-  MUSCLE, and Kalign
+- [rMSA](https://mhahsler.r-universe.dev/rMSA): Interface for Popular
+  Multiple Sequence Alignment Tools including ClustalW, MAFFT, MUSCLE,
+  and Kalign
 
 ## Installation
 
