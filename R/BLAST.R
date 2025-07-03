@@ -135,7 +135,8 @@
 #'     ## Pass on BLAST arguments (99% identity) and use a custom format
 #'     ## (see BLAST documentation)
 #'     fmt <- paste(
-#'         "qaccver saccver pident length mismatch gapopen qstart qend",
+#'         "stitle staxid qaccver saccver pident length mismatch",
+#'         "gapopen qstart qend",
 #'         "sstart send evalue bitscore qseq sseq"
 #'     )
 #'     cl <- predict(bl, seq,

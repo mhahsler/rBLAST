@@ -2,7 +2,8 @@ rBLAST 1.1.2 (Release date: 2025-01-06)
 ==============
 
 Changes:
-* We use now @ as the delimiter for blast since some stitle entries contain ,.
+* We use now '@' as the delimiter for blast since some stitle entries
+  contain ','.
 
 rBLAST 1.1.1 (Release date: 2024-04-30)
 ==============
