@@ -30,8 +30,10 @@ has_blast()
 \arguments{
 \item{db}{the database file to be searched (without file extension).}
 
-\item{remote}{logical execute the query remotely on the NCBI server. \code{db}
-needs to be the name of a database available in the server.}
+\item{remote}{logical execute the query remotely on a NCBI server. \code{db}
+needs to be the name of a database available in the server.
+Note: This is very slow since it uses a shared resource at NCBI where jobs
+may be queued for execution.}
 
 \item{type}{BLAST program to use (e.g., \code{blastn}, \code{blastp}, \code{blastx}).}
 
@@ -150,7 +152,8 @@ if (has_blast()) {
     ## Pass on BLAST arguments (99\% identity) and use a custom format
     ## (see BLAST documentation)
     fmt <- paste(
-        "qaccver saccver pident length mismatch gapopen qstart qend",
+        "stitle staxid qaccver saccver pident length mismatch",
+        "gapopen qstart qend",
         "sstart send evalue bitscore qseq sseq"
     )
     cl <- predict(bl, seq,
