@@ -2,7 +2,7 @@
 title: "rBLAST: R Interface for the Basic Local Alignment Search Tool"
 author: "Michael Hahsler and Anurag Nagar"
 vignette: >
-  %\VignetteIndexEntry{Searching Sequence Databases with rBLAST}
+  %\VignetteIndexEntry{rBLAST: R Interface for the Basic Local Alignment Search Tool}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 output:
