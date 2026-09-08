@@ -186,7 +186,7 @@ CPU threads.
 By default, rBLAST removes a prediction's temporary FASTA and output files.
 Retain them for one diagnostic run with:
 
-```{r debugging}
+```{r debugging, eval = run_local}
 hits <- predict(
     db,
     queries[1],
@@ -230,7 +230,7 @@ TMPDIR=/path/with/space Rscript analysis.R
 Because these archives can be large and require network access, this example is
 not executed while building the vignette:
 
-```{r prebuilt-database, eval = FALSE}
+```{r prebuilt-database, eval = run_local, eval = FALSE}
 archive <- blast_db_get("16S_ribosomal_RNA.tar.gz")
 database_dir <- "/path/to/16S_rRNA_DB"
 dir.create(database_dir, recursive = TRUE, showWarnings = FALSE)
@@ -249,7 +249,7 @@ for database layouts and search options.
 
 A BLAST object can refer to an NCBI database without downloading it:
 
-```{r remote-search, eval = FALSE}
+```{r remote-search, eval = run_local, eval = FALSE}
 remote_db <- blast("nt", remote = TRUE, type = "blastn")
 remote_hits <- predict(remote_db, queries[1])
 ```
