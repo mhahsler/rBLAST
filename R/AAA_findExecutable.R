@@ -32,7 +32,7 @@
                 call. = FALSE
             )
         }
-        return(character(0))
+        return(structure("", name = exe[1]))
     }
 
     path[which(nzchar(path))[1]]
