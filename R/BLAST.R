@@ -265,7 +265,41 @@ predict.BLAST <-
         if (verbose) {
             cat(" * writing FASTA query sequences to", infile, "\n")
         }
-        writeXStringSet(x, infile, append = FALSE, format = "fasta")
+        tryCatch(
+            writeXStringSet(x, infile, append = FALSE, format = "fasta"),
+            error = function(e) {
+                stop(
+                    "Failed to write BLAST query FASTA file: ",
+                    file.path(wd, infile), "\n",
+                    "Reason: ", conditionMessage(e),
+                    call. = FALSE
+                )
+            }
+        )
+
+        if (!file.exists(infile)) {
+            stop(
+                "BLAST query FASTA file was not created: ",
+                file.path(wd, infile),
+                call. = FALSE
+            )
+        }
+
+        if (is.na(file.info(infile)$size) || file.info(infile)$size == 0L) {
+            stop(
+                "BLAST query FASTA file is empty: ",
+                file.path(wd, infile),
+                call. = FALSE
+            )
+        }
+
+        if (file.access(infile, mode = 4L) != 0L) {
+            stop(
+                "BLAST query FASTA file is not readable: ",
+                file.path(wd, infile),
+                call. = FALSE
+            )
+        }
 
         cmd <- .findExecutable(exe)
         args <- c(
@@ -290,10 +324,30 @@ predict.BLAST <-
             )
         }
 
-        system2(
+        status <- system2(
             command = cmd,
             args = args
         )
+
+        if (!identical(status, 0L)) {
+            stop(
+                exe, " failed with exit status ", status,
+                ". No BLAST results were read.\n",
+                "Query file: ", file.path(wd, infile), "\n",
+                "Output file: ", file.path(wd, outfile), "\n",
+                "Run with `verbose = TRUE, keep_tmp = TRUE` to inspect ",
+                "the command and temporary files.",
+                call. = FALSE
+            )
+        }
+
+        if (!file.exists(outfile)) {
+            stop(
+                exe, " completed without creating its output file: ",
+                file.path(wd, outfile),
+                call. = FALSE
+            )
+        }
 
         ## rdp output column names
         if (custom_format == "") {
@@ -316,13 +370,14 @@ predict.BLAST <-
         }
 
         ## read and parse BLAST output
-        hits <- length(readLines(outfile))
+        output <- readLines(outfile)
+        hits <- length(output)
         if (verbose) {
             cat(" * reading results from", outfile, "\n")
             cat(" * number of lines in results file:", hits, "\n")
         }
 
-        if (length(readLines(outfile)) == 0L) {
+        if (hits == 0L) {
             return(data.frame(matrix(ncol = length(c_names), nrow = 0)))
         }
 
