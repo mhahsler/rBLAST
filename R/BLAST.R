@@ -410,6 +410,6 @@ predict.BLAST <-
 has_blast <- function() {
     exes <- c("blastn", "makeblastdb", "blastdbcmd")
     paths <- sapply(exes, FUN = .findExecutable, interactive = FALSE)
-    any(!nzchar(paths))
+    all(nzchar(paths))
 }
 
