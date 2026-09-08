@@ -15,12 +15,12 @@ Authors@R: c(person("Michael", "Hahsler",
 biocViews: Genetics, Sequencing, SequenceMatching, Alignment, DataImport
 Depends: Biostrings (>= 2.26.2)
 Imports: methods, utils, BiocFileCache
-Suggests: knitr, rmarkdown, testthat
+Suggests: knitr, rmarkdown, testthat, withr
 URL: https://github.com/mhahsler/rBLAST
 BugReports: https://github.com/mhahsler/rBLAST/issues
 SystemRequirements: ncbi-blast+
 License: GPL-3
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.0
