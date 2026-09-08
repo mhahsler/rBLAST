@@ -15,13 +15,6 @@ Interfaces the Basic Local Alignment Search Tool (BLAST) to search genetic seque
 interfaces to `blastn`, `blastp`, `blastx`, and `makeblastdb`.
 The BLAST software needs to be downloaded and installed separately.
 
-Other R interfaces for bioinformatics are also available:
-
-* [rRDP](https://bioconductor.org/packages/rRDP): Interface to the RDP Classifier 
-* [rMSA](https://mhahsler.r-universe.dev/rMSA): Interface for Popular Multiple 
-    Sequence Alignment Tools including ClustalW, MAFFT, MUSCLE, and Kalign
-
-
 ## Installation
 
 1. Install the BLAST software by following the instructions in the 
@@ -79,6 +72,9 @@ cl
 ```{r, include=FALSE}
 unlink("./16S_rRNA_DB", recursive = TRUE)
 ```
+
+Examples can be found in the vignette 
+[Searching Sequence Databases with rBLAST](https://mhahsler.r-universe.dev/articles/rBLAST/blast.html)
 
 ## Citation Request
 

@@ -8,29 +8,34 @@
 \description{
 Seamlessly interfaces the Basic Local Alignment Search Tool (BLAST) running locally to search genetic sequence data bases. This work was partially supported by grant no. R21HG005912 from the National Human Genome Research Institute.
 }
-\section{Citation Request}{
+\section{Package overview}{
 
 
-Cite the use of this package as:
+rBLAST provides an R interface to locally installed NCBI BLAST+ programs.
+Use \code{\link[=makeblastdb]{makeblastdb()}} to build a local database, \code{\link[=blast]{blast()}} to open it, and
+\code{predict()} to search it with sequences stored in Biostrings containers.
+\code{\link[=blast_db_get]{blast_db_get()}} can download and cache prebuilt NCBI database archives.
 
-Hahsler M, Nagar A (2019). rBLAST: R Interface for the Basic Local
-Alignment Search Tool. R package version 0.99.2,
-URL: https://github.com/mhahsler/rBLAST.
+BLAST+ is external software and must be installed separately. Use
+\code{\link[=has_blast]{has_blast()}} and \code{Sys.which()} to diagnose executable discovery.
+}
+
+\section{Citation}{
+
+
+Run \code{citation("rBLAST")} to obtain the citation for the installed package
+version.
 }
 
 \seealso{
-Useful links:
-\itemize{
-  \item \url{https://github.com/mhahsler/rBLAST}
-  \item Report bugs at \url{https://github.com/mhahsler/rBLAST/issues}
-}
-
+\code{\link[=blast]{blast()}}, \code{\link[=makeblastdb]{makeblastdb()}}, \code{\link[=blast_db_get]{blast_db_get()}}
 }
 \author{
 \strong{Maintainer}: Michael Hahsler \email{mhahsler@lyle.smu.edu} (\href{https://orcid.org/0000-0003-2716-1405}{ORCID})
 
 Authors:
 \itemize{
+  \item Michael Hahsler \email{mhahsler@lyle.smu.edu} (\href{https://orcid.org/0000-0003-2716-1405}{ORCID})
   \item Nagar Anurag
 }
 

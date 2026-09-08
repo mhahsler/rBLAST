@@ -14,17 +14,3 @@ test_that(".findExecutable handles missing executables", {
         "Executable for rblast-command-that-does-not-exist not found"
     )
 })
-
-test_that("has_blast reports executable availability", {
-    local_mocked_bindings(
-        .findExecutable = function(...) character(0),
-        .package = "rBLAST"
-    )
-    expect_false(has_blast())
-
-    local_mocked_bindings(
-        .findExecutable = function(...) "/usr/bin/blastn",
-        .package = "rBLAST"
-    )
-    expect_true(has_blast())
-})

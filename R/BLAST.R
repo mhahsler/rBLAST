@@ -19,8 +19,8 @@
 
 #' Basic Local Alignment Search Tool (BLAST)
 #'
-#' Open a BLAST database and execute blastn (blastp or blastx)
-#' from blast+ to find sequences matches.
+#' Open a local or remote BLAST database and search it with a BLAST+
+#' command-line program such as `blastn`, `blastp`, or `blastx`.
 #'
 #' # Installing BLAST+
 #' The BLAST+ software needs to be installed on your system. Installation
@@ -58,32 +58,64 @@
 #' @name blast
 #' @aliases blast BLAST
 #' @family blast
-#' @param db the database file to be searched (without file extension).
-#' @param type BLAST program to use (e.g., `blastn`, `blastp`, `blastx`).
+#' @param db Character scalar naming the database to search. For a local
+#'   database, supply the path and database prefix without an index-file
+#'   extension. For a remote search, supply an NCBI database name such as
+#'   `"nt"` or `"nr"`.
+#' @param type Character scalar naming the BLAST+ search program, for example
+#'   `"blastn"`, `"blastp"`, or `"blastx"`. The program must be compatible
+#'   with the query sequences and database type.
 #' @param object,x An open BLAST database as a BLAST object created
 #' with [blast()].
-#' @param newdata the query as an object of class [Biostrings::XStringSet].
-#' @param remote logical execute the query remotely on a NCBI server. `db`
-#'  needs to be the name of a database available in the server.
-#'  Note: This is very slow since it uses a shared resource at NCBI where jobs
-#'  may be queued for execution.
-#' @param BLAST_args additional arguments in command-line style.
-#' @param custom_format custom format specified by space delimited format
-#' specifiers.
-#' @param info print information about the database (needs the executable
-#'  `blastdbcmd` in the
-#' path).
-#' @param verbose logical; print progress and debugging information.
-#' @param keep_tmp logical; keep temporary files for debugging.
-#' @param info show additional data base information.
-#' @param ...  additional arguments are ignored.
+#' @param newdata Query sequences as a [Biostrings::XStringSet] object. Use a
+#'   DNA or RNA string set with nucleotide searches and an amino-acid string
+#'   set with protein searches.
+#' @param remote Logical scalar. If `TRUE`, execute the query on an NCBI server.
+#'   Remote searches use a shared service and can be substantially slower than
+#'   local searches.
+#' @param BLAST_args Character scalar containing additional BLAST+ command-line
+#'   options, for example `"-perc_identity 99 -num_threads 4"`. The database,
+#'   query, output file, and output format are managed by `predict.BLAST()` and
+#'   should not be supplied here.
+#' @param custom_format Character scalar containing space-separated BLAST
+#'   output field specifiers, such as `"qseqid sseqid pident length"`. An empty
+#'   string uses the standard 12-column tabular format. See the BLAST+
+#'   documentation for available specifiers.
+#' @param info Logical scalar. For `print.BLAST()`, query and display database
+#'   metadata using `blastdbcmd`. Set to `FALSE` to print only the database path
+#'   and BLAST program.
+#' @param verbose Logical scalar; report the generated files, command, and
+#'   number of matches.
+#' @param keep_tmp Logical scalar; retain the query FASTA and BLAST output files
+#'   in [tempdir()] for debugging. Retained files can be large, especially for
+#'   repeated or parallel searches, and must be managed by the caller.
+#' @param ... Additional arguments; currently ignored.
 #' @return
-#' * `blast()` returns a BLAST database object which can be used for
-#' queries (via `predict`).
-#' * `predict` returns a data.frame containing
-#' the BLAST results.
-#' * `has_blast()` returns `TRUE` if the blast software installation can be
-#' found and `FALSE` otherwise.
+#' * `blast()` returns an object of class `BLAST` containing the database,
+#'   search program, and remote-search setting.
+#' * `predict.BLAST()` returns a data frame with one row per hit. Column names
+#'   follow `custom_format`, or the standard 12 BLAST fields when it is empty.
+#'   A search without hits returns a zero-row data frame.
+#' * `print.BLAST()` returns `NULL` invisibly and is called for its side effect.
+#' * `blast_help()` returns the exit status from the BLAST+ help command.
+#' * `has_blast()` returns a logical scalar indicating whether at least
+#'   `blastn`, `makeblastdb`, and `blastdbcmd` can be
+#'   found on `PATH`.
+#'
+#' @details
+#' `blast()` validates a local database with `blastdbcmd -info`. It does not
+#' download or create a database; use [blast_db_get()] for NCBI archives or
+#' [makeblastdb()] to build a database from a FASTA file.
+#'
+#' `predict.BLAST()` writes `newdata` to a temporary FASTA file, invokes the
+#' selected BLAST+ program, and parses delimiter-separated tabular output. A
+#' FASTA write failure, a nonzero BLAST exit status, or a missing output file
+#' produces an error before result parsing. Use `verbose = TRUE` together with
+#' `keep_tmp = TRUE` when diagnosing a failed command.
+#'
+#' BLAST's own multithreading is controlled with the `-num_threads` option in
+#' `BLAST_args`. This is distinct from running several `predict()` calls in
+#' parallel.
 #' @author Michael Hahsler
 #' @references BLAST Help - BLAST+ Executable:
 #' https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html
@@ -92,63 +124,40 @@
 #' https://www.ncbi.nlm.nih.gov/books/NBK279690/
 #' @keywords model
 #' @examples
-#' ## check if blastn is correctly installed. Should return the path to the
-#' ##   executable
-#' Sys.which("blastn")
+#' ## Check if BLAST is installed
+#' Sys.which(c("blastn", "makeblastdb", "blastdbcmd"))
 #'
-#' ## only run if blast is installed
+#' ## Build and query a small local database (only if BLAST is installed).
 #' if (has_blast()) {
-#'     ## check version you should have version 1.8.1+
-#'     system2("blastn", "-version")
 #'
-#'     ## download the latest version of the 16S Microbial
-#'     ##  rRNA data base from NCBI using the local chache
-#'     tgz_file <- blast_db_get("16S_ribosomal_RNA.tar.gz")
+#'     ## Create a BLAST DB
+#'     seq <- readRNAStringSet(system.file(
+#'         "examples/RNA_example.fasta", package = "rBLAST"
+#'     ))
+#'     work_dir <- tempfile("rBLAST-example-")
+#'     dir.create(work_dir)
+#'     fasta <- file.path(work_dir, "sequences.fasta")
+#'     db_path <- file.path(work_dir, "database")
 #'
-#'     ## extract the database files
-#'     untar(tgz_file, exdir = "./16S_rRNA_DB")
+#'     writeXStringSet(seq, fasta)
+#'     makeblastdb(fasta, db_name = db_path, dbtype = "nucl", verbose = FALSE)
 #'
-#'     ## Note the database file can also downloaded without using a
-#'     ##    cache using download.file
-#'     # download.file(paste("https://ftp.ncbi.nlm.nih.gov/blast/db",
-#'     #    "16S_ribosomal_RNA.tar.gz", sep = "/"),
-#'     #    "16S_ribosomal_RNA.tar.gz", mode = "wb")
-#'     # untar("16S_ribosomal_RNA.tar.gz", exdir = "./16S_rRNA_DB")
+#'     ## DB files
+#'     list.files(work_dir)
 #'
-#'     ## A BLAST database is just a set of files. It is a good idea to
-#'     ## organize the files in a directory.
-#'     list.files("./16S_rRNA_DB")
+#'     ## Open and query the DB
+#'     db <- blast(db_path)
+#'     db
 #'
-#'     ## load a BLAST database (replace db with the location + name of
-#'     ##   the BLAST DB without the extension)
-#'     bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
-#'     bl
-#'
-#'     ## read a single example sequence to BLAST
-#'     seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-#'         package = "rBLAST"
-#'     ))[1]
-#'     seq
-#'
-#'     ## query a sequence using BLAST
-#'     cl <- predict(bl, seq)
-#'     cl[1:5, ]
-#'
-#'     ## Pass on BLAST arguments (99% identity) and use a custom format
-#'     ## (see BLAST documentation)
-#'     fmt <- paste(
-#'         "stitle staxid qaccver saccver pident length mismatch",
-#'         "gapopen qstart qend",
-#'         "sstart send evalue bitscore qseq sseq"
+#'     hits <- predict(
+#'         db, seq[1],
+#'         BLAST_args = "-perc_identity 99 -num_threads 2",
+#'         custom_format = "qseqid sseqid pident length evalue bitscore"
 #'     )
-#'     cl <- predict(bl, seq,
-#'         BLAST_args = "-perc_identity 99",
-#'         custom_format = fmt
-#'     )
-#'     cl
+#'     hits
 #'
-#'     ## cleanup the example: delete the database files
-#'     unlink("./16S_rRNA_DB", recursive = TRUE)
+#'     ## Cleanup
+#'     unlink(work_dir, recursive = TRUE)
 #' }
 #' @importFrom utils read.table
 #' @importFrom methods is
@@ -399,7 +408,7 @@ predict.BLAST <-
 #' @rdname blast
 #' @export
 has_blast <- function() {
-    length(.findExecutable("blastn",
-        interactive = FALSE
-    )) != 0
+    exes <- c("blastn", "makeblastdb", "blastdbcmd")
+    paths <- sapply(exes, FUN = .findExecutable, interactive = FALSE)
+    all(nzchar(paths))
 }

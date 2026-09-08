@@ -16,43 +16,53 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#' Manage BLAST Database Downloads using BioCFileCache
+#' Cache BLAST Database Archives
 #'
-#' Use [BiocFileCache::BiocFileCache] to manage local copies of BLAST database downloads.
-#' NCBI BLAST databases are updated daily and
-#' may be downloaded via FTP from \url{https://ftp.ncbi.nlm.nih.gov/blast/db/}.
+#' Download BLAST database archives and manage local copies with
+#' [BiocFileCache::BiocFileCache].
 #'
-#' The package maintains its own local cache which can be accessed using
-#' `blast_db_cache()`.
+#' `blast_db_cache()` opens rBLAST's user-level cache. Its location is selected
+#' by [tools::R_user_dir()] and therefore depends on the operating system and
+#' environment.
+#'
+#' `blast_db_get()` returns a cached archive when available and downloads it
+#' otherwise. With `check_update = TRUE`, the remote resource is checked and an
+#' outdated cached copy is refreshed. Downloaded archives still need to be
+#' extracted before their database prefix can be passed to [blast()]. Large
+#' NCBI databases can consist of multiple numbered archives; download and
+#' extract every part into the same directory.
 #'
 #' @family blast
-#' @param file the filename of the database.
-#' @param baseURL URL to download blast databases from. The default is NCBI's
-#'  ftp server.
-#' @param check_update logical; update the local cache if there is a newer
-#'    version of the file available on the server. This may take some time.
-#' @param verbose logical; display download information.
-#' @returns
-#' * `blast_db_cache()` returns the path to the local [BiocFileCache::BiocFileCache] cache.
-#' * `blast_db_get()` returns the file path to a downloaded BLAST database
-#'     file.
+#' @param file Character scalar giving the archive filename, for example
+#'   `"16S_ribosomal_RNA.tar.gz"`.
+#' @param baseURL Character scalar giving the directory URL from which `file`
+#'   is downloaded. It must end in `/`.
+#' @param check_update Logical scalar; check whether the remote file is newer
+#'   than the cached copy and download it when necessary.
+#' @param verbose Logical scalar; report whether a file is downloaded or a
+#'   cached copy is returned.
+#' @return
+#' * `blast_db_cache()` returns a [BiocFileCache::BiocFileCache] object.
+#' * `blast_db_get()` returns a character vector containing the local path to
+#'   the cached archive.
 
 #' @author Michael Hahsler
 #' @examples
-#' ## get a database file (will be downloaded if the
-#' ##     local copy is not up-to-date)
-#' db_16S <- blast_db_get("16S_ribosomal_RNA.tar.gz")
-#' db_16S
+#' \dontrun{
+#' ## Download or retrieve an existing cached copy (this will take a little).
+#' blast_db_get("16S_ribosomal_RNA.tar.gz")
 #'
-#' ## directly interacting with the local cache
-#' library(BiocFileCache)
+#' ## Extract the chached archive, then open the database using its prefix.
+#' db_dir <- tempfile("16S-rRNA-")
+#' dir.create(db_dir)
+#' untar(blast_db_get("16S_ribosomal_RNA.tar.gz"), exdir = db_dir)
+#' db <- blast(file.path(db_dir, "16S_ribosomal_RNA"))
+#' db
 #'
-#' ## show the package's cache directory
-#' local_cache <- blast_db_cache()
-#' local_cache
-#'
-#' ## bfc functions can be used to manage the local cache
-#' bfcinfo(local_cache)
+#' ## Inspect the underlying cache with BiocFileCache functions.
+#' cache <- blast_db_cache()
+#' BiocFileCache::bfcinfo(cache)
+#' }
 #' @export
 blast_db_cache <-
     function() {
@@ -68,7 +78,7 @@ blast_db_get <-
              check_update = TRUE,
              verbose = TRUE) {
         fileURL <-
-            paste0("https://ftp.ncbi.nlm.nih.gov/blast/db/", file)
+            paste0(baseURL, file)
 
         bfc <- blast_db_cache()
         rid <-

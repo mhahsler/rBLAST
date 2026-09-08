@@ -14,71 +14,73 @@ makeblastdb(
 )
 }
 \arguments{
-\item{file}{input file/database name. \strong{Note} that the filename and path
-cannot contain whitespaces.}
+\item{file}{Character scalar giving the input FASTA path.}
 
-\item{db_name}{name of the database (files).}
+\item{db_name}{Optional character scalar giving the output database prefix,
+including its directory if needed.}
 
-\item{dbtype}{molecule type of target db (\code{"nucl"} or \code{"prot"}).}
+\item{dbtype}{Character scalar specifying the database molecule type:
+\code{"nucl"} or \code{"prot"}.}
 
-\item{hash_index}{logical; create index of sequence hash values.}
+\item{hash_index}{Logical scalar; add \code{-hash_index} to create an index of
+sequence hash values.}
 
-\item{args}{string including additional arguments passed on
-to \code{makeblastdb}.}
+\item{args}{Character scalar containing additional \code{makeblastdb}
+command-line options.}
 
-\item{verbose}{logical; show the progress report produced by \code{makeblastdb}?}
+\item{verbose}{Logical scalar; show output produced by \code{makeblastdb}.}
 }
 \value{
-Nothing but creates a BLAST database directory.
+The integer exit status returned by \code{makeblastdb}; zero indicates
+success. The function is primarily called for its side effect of creating
+the database files.
 }
 \description{
-Call the \code{makeblastdb} utility to create a BLAST database from a FASTA file.
+Run the BLAST+ \code{makeblastdb} utility to create a local nucleotide or protein
+database from a FASTA file.
 }
 \details{
 R needs to be able to find the executable (mostly an issue with Windows).
 Try \code{Sys.which("makeblastdb")} to see if the program is properly
 installed.
 
-Use \code{blast_help("makeblastdb")} to see all possible extra arguments.
-Arguments need to be formated in exactly the way as they would be used for
-the command line tool.
+Use \code{blast_help("makeblastdb")} to see all available options. Additional
+options supplied through \code{args} are passed to the command-line program.
+
+When \code{db_name} is \code{NULL}, BLAST uses \code{file} as the output database prefix.
+Otherwise, database index files are created using the \code{db_name} prefix. The
+destination directory must already exist. Paths containing whitespace are
+not supported by this interface.
 }
 \examples{
-## check if makeblastdb is correctly installed
-Sys.which("makeblastdb")
-
-## only run if blast is installed
+## Only run if BLAST is installed
 if (has_blast()) {
-    ## see possible arguments
-    blast_help("makeblastdb")
-
-    ## read some example sequences
+    ## Create an example BLAST DB
     seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
         package = "rBLAST"
     ))
+    work_dir <- tempfile("rBLAST-db-")
+    dir.create(work_dir)
+    fasta <- file.path(work_dir, "sequences.fasta")
+    db_path <- file.path(work_dir, "database")
+    writeXStringSet(seq, fasta)
 
-    ## 1. write the FASTA file
-    writeXStringSet(seq, filepath = "seqs.fasta")
+    status <- makeblastdb(
+        fasta, db_name = db_path, dbtype = "nucl", verbose = FALSE
+    )
+    status
 
-    ## 2. make database
-    makeblastdb(file = "seqs.fasta", db_name = "db/small", dbtype = "nucl")
+    ## Created DB files
+    Sys.glob(paste0(db_path, ".*"))
 
-    ## 3. open database
-    db <- blast("db/small")
-    db
-
-    ## 4. perform search (first sequence in the db should be a perfect match)
-    predict(db, seq[1])
-
-    ## clean up
-    unlink("seqs.fasta")
-    unlink("db", recursive = TRUE)
+    ## Cleanip
+    unlink(work_dir, recursive = TRUE)
 }
 }
 \seealso{
-Other blast: 
-\code{\link{blast}()},
-\code{\link{blast_db_cache}()}
+Other blast:
+\code{\link[=blast]{blast()}},
+\code{\link[=blast_db_cache]{blast_db_cache()}}
 }
 \author{
 Michael Hahsler

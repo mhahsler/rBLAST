@@ -28,46 +28,66 @@ blast_help(type = "blastn")
 has_blast()
 }
 \arguments{
-\item{db}{the database file to be searched (without file extension).}
+\item{db}{Character scalar naming the database to search. For a local
+database, supply the path and database prefix without an index-file
+extension. For a remote search, supply an NCBI database name such as
+\code{"nt"} or \code{"nr"}.}
 
-\item{remote}{logical execute the query remotely on a NCBI server. \code{db}
-needs to be the name of a database available in the server.
-Note: This is very slow since it uses a shared resource at NCBI where jobs
-may be queued for execution.}
+\item{remote}{Logical scalar. If \code{TRUE}, execute the query on an NCBI server.
+Remote searches use a shared service and can be substantially slower than
+local searches.}
 
-\item{type}{BLAST program to use (e.g., \code{blastn}, \code{blastp}, \code{blastx}).}
+\item{type}{Character scalar naming the BLAST+ search program, for example
+\code{"blastn"}, \code{"blastp"}, or \code{"blastx"}. The program must be compatible
+with the query sequences and database type.}
 
-\item{info}{show additional data base information.}
+\item{info}{Logical scalar. For \code{print.BLAST()}, query and display database
+metadata using \code{blastdbcmd}. Set to \code{FALSE} to print only the database path
+and BLAST program.}
 
-\item{...}{additional arguments are ignored.}
+\item{...}{Additional arguments; currently ignored.}
 
 \item{object, x}{An open BLAST database as a BLAST object created
 with \code{\link[=blast]{blast()}}.}
 
-\item{newdata}{the query as an object of class \link[Biostrings:XStringSet-class]{Biostrings::XStringSet}.}
+\item{newdata}{Query sequences as a \link[Biostrings:XStringSet]{Biostrings::XStringSet} object. Use a
+DNA or RNA string set with nucleotide searches and an amino-acid string
+set with protein searches.}
 
-\item{BLAST_args}{additional arguments in command-line style.}
+\item{BLAST_args}{Character scalar containing additional BLAST+ command-line
+options, for example \code{"-perc_identity 99 -num_threads 4"}. The database,
+query, output file, and output format are managed by \code{predict.BLAST()} and
+should not be supplied here.}
 
-\item{custom_format}{custom format specified by space delimited format
-specifiers.}
+\item{custom_format}{Character scalar containing space-separated BLAST
+output field specifiers, such as \code{"qseqid sseqid pident length"}. An empty
+string uses the standard 12-column tabular format. See the BLAST+
+documentation for available specifiers.}
 
-\item{verbose}{logical; print progress and debugging information.}
+\item{verbose}{Logical scalar; report the generated files, command, and
+number of matches.}
 
-\item{keep_tmp}{logical; keep temporary files for debugging.}
+\item{keep_tmp}{Logical scalar; retain the query FASTA and BLAST output files
+in \code{\link[=tempdir]{tempdir()}} for debugging. Retained files can be large, especially for
+repeated or parallel searches, and must be managed by the caller.}
 }
 \value{
 \itemize{
-\item \code{blast()} returns a BLAST database object which can be used for
-queries (via \code{predict}).
-\item \code{predict} returns a data.frame containing
-the BLAST results.
-\item \code{has_blast()} returns \code{TRUE} if the blast software installation can be
-found and \code{FALSE} otherwise.
+\item \code{blast()} returns an object of class \code{BLAST} containing the database,
+search program, and remote-search setting.
+\item \code{predict.BLAST()} returns a data frame with one row per hit. Column names
+follow \code{custom_format}, or the standard 12 BLAST fields when it is empty.
+A search without hits returns a zero-row data frame.
+\item \code{print.BLAST()} returns \code{NULL} invisibly and is called for its side effect.
+\item \code{blast_help()} returns the exit status from the BLAST+ help command.
+\item \code{has_blast()} returns a logical scalar indicating whether at least
+\code{blastn}, \code{makeblastdb}, and \code{blastdbcmd} can be
+found on \code{PATH}.
 }
 }
 \description{
-Open a BLAST database and execute blastn (blastp or blastx)
-from blast+ to find sequences matches.
+Open a local or remote BLAST database and search it with a BLAST+
+command-line program such as \code{blastn}, \code{blastp}, or \code{blastx}.
 }
 \section{Installing BLAST+}{
 The BLAST+ software needs to be installed on your system. Installation
@@ -104,66 +124,57 @@ Large databases are separated into several archives numbered \code{00}, \code{01
 Download all archives and extract the files in the same directory.
 All files will have a common name which is the database name used for calling
 \code{blast()}.
+
+\code{blast()} validates a local database with \code{blastdbcmd -info}. It does not
+download or create a database; use \code{\link[=blast_db_get]{blast_db_get()}} for NCBI archives or
+\code{\link[=makeblastdb]{makeblastdb()}} to build a database from a FASTA file.
+
+\code{predict.BLAST()} writes \code{newdata} to a temporary FASTA file, invokes the
+selected BLAST+ program, and parses delimiter-separated tabular output. A
+FASTA write failure, a nonzero BLAST exit status, or a missing output file
+produces an error before result parsing. Use \code{verbose = TRUE} together with
+\code{keep_tmp = TRUE} when diagnosing a failed command.
+
+BLAST's own multithreading is controlled with the \code{-num_threads} option in
+\code{BLAST_args}. This is distinct from running several \code{predict()} calls in
+parallel.
 }
 
 \examples{
-## check if blastn is correctly installed. Should return the path to the
-##   executable
-Sys.which("blastn")
+## Check if BLAST is installed
+Sys.which(c("blastn", "makeblastdb", "blastdbcmd"))
 
-## only run if blast is installed
+## Build and query a small local database (only if BLAST is installed).
 if (has_blast()) {
-    ## check version you should have version 1.8.1+
-    system2("blastn", "-version")
 
-    ## download the latest version of the 16S Microbial
-    ##  rRNA data base from NCBI using the local chache
-    tgz_file <- blast_db_get("16S_ribosomal_RNA.tar.gz")
+    ## Create a BLAST DB
+    seq <- readRNAStringSet(system.file(
+        "examples/RNA_example.fasta", package = "rBLAST"
+    ))
+    work_dir <- tempfile("rBLAST-example-")
+    dir.create(work_dir)
+    fasta <- file.path(work_dir, "sequences.fasta")
+    db_path <- file.path(work_dir, "database")
 
-    ## extract the database files
-    untar(tgz_file, exdir = "./16S_rRNA_DB")
+    writeXStringSet(seq, fasta)
+    makeblastdb(fasta, db_name = db_path, dbtype = "nucl", verbose = FALSE)
 
-    ## Note the database file can also downloaded without using a
-    ##    cache using download.file
-    # download.file(paste("https://ftp.ncbi.nlm.nih.gov/blast/db",
-    #    "16S_ribosomal_RNA.tar.gz", sep = "/"),
-    #    "16S_ribosomal_RNA.tar.gz", mode = "wb")
-    # untar("16S_ribosomal_RNA.tar.gz", exdir = "./16S_rRNA_DB")
+    ## DB files
+    list.files(work_dir)
 
-    ## A BLAST database is just a set of files. It is a good idea to
-    ## organize the files in a directory.
-    list.files("./16S_rRNA_DB")
+    ## Open and query the DB
+    db <- blast(db_path)
+    db
 
-    ## load a BLAST database (replace db with the location + name of
-    ##   the BLAST DB without the extension)
-    bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
-    bl
-
-    ## read a single example sequence to BLAST
-    seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-        package = "rBLAST"
-    ))[1]
-    seq
-
-    ## query a sequence using BLAST
-    cl <- predict(bl, seq)
-    cl[1:5, ]
-
-    ## Pass on BLAST arguments (99\% identity) and use a custom format
-    ## (see BLAST documentation)
-    fmt <- paste(
-        "stitle staxid qaccver saccver pident length mismatch",
-        "gapopen qstart qend",
-        "sstart send evalue bitscore qseq sseq"
+    hits <- predict(
+        db, seq[1],
+        BLAST_args = "-perc_identity 99 -num_threads 2",
+        custom_format = "qseqid sseqid pident length evalue bitscore"
     )
-    cl <- predict(bl, seq,
-        BLAST_args = "-perc_identity 99",
-        custom_format = fmt
-    )
-    cl
+    hits
 
-    ## cleanup the example: delete the database files
-    unlink("./16S_rRNA_DB", recursive = TRUE)
+    ## Cleanup
+    unlink(work_dir, recursive = TRUE)
 }
 }
 \references{
@@ -174,9 +185,9 @@ BLAST Command Line Applications User Manual,
 https://www.ncbi.nlm.nih.gov/books/NBK279690/
 }
 \seealso{
-Other blast: 
-\code{\link{blast_db_cache}()},
-\code{\link{makeblastdb}()}
+Other blast:
+\code{\link[=blast_db_cache]{blast_db_cache()}},
+\code{\link[=makeblastdb]{makeblastdb()}}
 }
 \author{
 Michael Hahsler

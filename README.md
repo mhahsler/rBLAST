@@ -3,23 +3,15 @@
 
 # R package rBLAST - R Interface for the Basic Local Alignment Search Tool
 
-[![r-universe
-status](https://mhahsler.r-universe.dev/badges/rBLAST)](https://mhahsler.r-universe.dev/rBLAST)
 [![Package on
 Bioc](https://img.shields.io/badge/Bioconductor-blue)](https://bioconductor.org/packages/rBLAST)
+[![r-universe
+status](https://mhahsler.r-universe.dev/badges/rBLAST)](https://mhahsler.r-universe.dev/rBLAST)
 
 Interfaces the Basic Local Alignment Search Tool (BLAST) to search
 genetic sequence data bases with the Bioconductor infrastructure. This
 includes interfaces to `blastn`, `blastp`, `blastx`, and `makeblastdb`.
 The BLAST software needs to be downloaded and installed separately.
-
-Other R interfaces for bioinformatics are also available:
-
-- [rRDP](https://bioconductor.org/packages/rRDP): Interface to the RDP
-  Classifier
-- [rMSA](https://mhahsler.r-universe.dev/rMSA): Interface for Popular
-  Multiple Sequence Alignment Tools including ClustalW, MAFFT, MUSCLE,
-  and Kalign
 
 ## Installation
 
@@ -35,7 +27,7 @@ Other R interfaces for bioinformatics are also available:
     }
 
     # The following initializes usage of Bioc devel
-    BiocManager::install(version = "devel")
+    BiocManager::install(version='devel')
 
     BiocManager::install("rBLAST")
     ```
@@ -62,22 +54,24 @@ bl
 ```
 
     ## BLAST Database
-    ## Location: /home/hahsler/baR/rBLAST/16S_rRNA_DB/16S_ribosomal_RNA 
+    ## Location: /home/mhahsler/github/rBLAST/16S_rRNA_DB/16S_ribosomal_RNA 
     ## BLAST Type: blastn 
     ## Database: 16S ribosomal RNA (Bacteria and Archaea type strains)
-    ##  27,138 sequences; 39,323,968 total bases
+    ##  27,649 sequences; 40,052,958 total bases
     ## 
-    ## Date: Apr 9, 2024  5:36 AM   Longest sequence: 3,600 bases
+    ## Date: Sep 3, 2026  5:36 AM   Longest sequence: 3,600 bases
     ## 
     ## BLASTDB Version: 5
     ## 
     ## Volumes:
-    ##  /home/hahsler/baR/rBLAST/16S_rRNA_DB/16S_ribosomal_RNA
+    ##  /home/mhahsler/github/rBLAST/16S_rRNA_DB/16S_ribosomal_RNA
 
 Load some test sequences shipped with the package.
 
 ``` r
-seq <- readRNAStringSet(system.file("examples/RNA_example.fasta", package = "rBLAST"))
+seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+    package = "rBLAST"
+))
 seq
 ```
 
@@ -104,9 +98,12 @@ cl
     ## 4   1675 NR_117153.1    100     32        0       0     27   58      1   32
     ##    evalue bitscore
     ## 1 1.5e-12       75
-    ## 2 7.0e-11       69
-    ## 3 9.0e-10       66
-    ## 4 4.2e-08       60
+    ## 2 7.1e-11       69
+    ## 3 9.2e-10       66
+    ## 4 4.3e-08       60
+
+Examples can be found in the vignette [Searching Sequence Databases with
+rBLAST](https://mhahsler.r-universe.dev/articles/rBLAST/blast.html)
 
 ## Citation Request
 
@@ -115,7 +112,7 @@ To cite package ‘rBLAST’ in publications use:
 > Hahsler M, Nagar A (2024). “rBLAST: R Interface for the Basic Local
 > Alignment Search Tool.” Bioconductor version: Release (3.19).
 > <doi:10.18129/B9.bioc.rBLAST>
-> <https://doi.org/10.18129/B9.bioc.rBLAST>, R package version 0.99.4.
+> <https://doi.org/10.18129/B9.bioc.rBLAST>. R package version 0.99.4.
 
     @Misc{,
       title = {{rBLAST:} {R} Interface for the Basic Local Alignment Search Tool},

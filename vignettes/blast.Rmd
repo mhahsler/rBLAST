@@ -1,14 +1,13 @@
 ---
-title: "rBLAST: R Interface for the Basic Local Alignment Search Tool"
+title: "Searching Sequence Databases with rBLAST"
 author: "Michael Hahsler and Anurag Nagar"
 vignette: >
-  %\VignetteIndexEntry{rBLAST: R Interface for the Basic Local Alignment Search Tool}
+  %\VignetteIndexEntry{Searching Sequence Databases with rBLAST}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 output:
   rmarkdown::html_vignette
 ---
-
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -17,179 +16,254 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message = FALSE}
 library("rBLAST")
+library("Biostrings")
 ```
 
+# Overview
 
-```{r, include = FALSE}
-# only run code if blast+ is installed
-run <- has_blast()
-```
+rBLAST connects Bioconductor sequence containers to the NCBI BLAST+
+command-line programs. A typical local search has three steps:
 
-```{r, echo = FALSE, eval = !run, results='asis'}
-cat("**Note: BLAST was not installed when this vignette was built. Some output is not available in this vignette!**")
-```
+1. Create a database from FASTA sequences with `makeblastdb()`.
+2. Open the database with `blast()`.
+3. Search it with `predict()` using a `DNAStringSet`, `RNAStringSet`, or
+   `AAStringSet` query.
 
-# Introduction
-
-This package provides an R interface to use 
-a local installation of 
-the Basic Local Alignment Search Tool (BLAST) executable. This allows the user
-to download BLAST databases for querying or to create their own database from 
-sets of sequences.
-The interface integrates BLAST search directly with the Bioconductor 
-infrastructure by using
-the `XStringSet` (e.g., `RNAStringSet`) from the package `Biostrings`.
-
-This package complements the function in `blastSequences()` in package `annotate` 
-that runs a BLAST query not locally but by connecting to the NCBI server. 
+`predict()` returns a data frame with one row per BLAST hit. rBLAST can also
+open downloaded NCBI databases and submit remote searches to NCBI.
 
 # System requirements
-The BLAST+ software needs to be installed on your system. Installation
-instructions are available in this package's
-[INSTALL](https://github.com/mhahsler/rBLAST/blob/devel/INSTALL) file and
-at \url{https://www.ncbi.nlm.nih.gov/books/NBK569861/}.
 
-R needs to be able to find the executable. After installing the software,
-try in R
-```{r, eval=run}
-Sys.which("blastn")
+BLAST+ is external software and must be installed separately. See the package
+[installation instructions](https://github.com/mhahsler/rBLAST/blob/devel/INSTALL)
+and the
+[BLAST+ installation guide](https://www.ncbi.nlm.nih.gov/books/NBK569861/).
+
+For the nucleotide workflow below, R must find all three programs:
+
+```{r check-tools}
+required_tools <- c("blastn", "makeblastdb", "blastdbcmd")
+Sys.which(required_tools)
 ```
 
-If the command returns "" instead of the path to the executable,
-then you need to set the environment variable called PATH. In R
-```{r, eval=run}
-Sys.setenv(PATH = paste(Sys.getenv("PATH"),
-   "path_to_your_BLAST_installation", sep=.Platform$path.sep))
+```{r include=FALSE}
+run_local <- has_blast()
 ```
 
-# Examples
-
-## Use an existing database
-
-You can download pretrained databases from NCBI at https://ftp.ncbi.nlm.nih.gov/blast/db/. 
-Here we  download the 16S rRNA database. To avoid multiple downloads of the same file, we
-use BiocFileCache in function `blast_db_cache` for download. The database compressed and 
-needs to be expanded.
-
-```{r, eval=run}
-## download the 16S Microbial rRNA data base from NCBI
-tgz_file <- blast_db_get("16S_ribosomal_RNA.tar.gz")
-untar(tgz_file, exdir = "16S_rRNA_DB")
+```{r missing-blast-note, echo = FALSE, eval = !run_local, results = "asis"}
+cat(paste0(
+    "**Note:** A complete local BLAST+ installation was not available when ",
+    "this vignette was built. The code is shown, but output from BLAST-dependent ",
+    "chunks is omitted.\n"
+))
 ```
 
-The extracted database consists of a folder with a set of database files.
+An empty path means that the corresponding executable is unavailable. If
+BLAST+ is installed outside the normal search path, update `PATH` before using
+rBLAST:
 
-```{r, eval=run}
-list.files("./16S_rRNA_DB/")
-```
-
-Next, we open the database for querying using the `blast()` function which 
-returns a BLAST database object.
-```{r, eval=run}
-bl <- blast(db = "./16S_rRNA_DB/16S_ribosomal_RNA")
-bl
-```
-
-To demonstrate how to query the database, we read one sequence from an example 
-FASTA file that 
-is shipped with the package. Queries are performed using the `predict()` function. The result is a 
-`data.frame` with one row per match. We will show the first 5 matches.
-
-```{r, eval=run}
-seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
-    package = "rBLAST"
-))[1]
-seq
-
-cl <- predict(bl, seq)
-nrow(cl)
-cl[1:5, ]
-```
-
-Additional arguments for BLAST can be passed on using the `BLAST_args`
-parameter for `predict()`.
-The output format
-can be specified using `custom_format`. In the following, we specify a custom format and 
-that the sequences need to have 99% identity. 
-See the BLAST Command Line Applications User Manual for details 
-(https://www.ncbi.nlm.nih.gov/books/NBK279690/).
-
-```{r, eval=run}
-fmt <- paste(
-    "qaccver saccver pident length mismatch gapopen qstart qend",
-    "sstart send evalue bitscore qseq sseq"
+```{r set-path, eval = FALSE}
+Sys.setenv(
+    PATH = paste(
+        Sys.getenv("PATH"),
+        "/path/to/ncbi-blast/bin",
+        sep = .Platform$path.sep
+    )
 )
-cl <- predict(bl, seq,
-    BLAST_args = "-perc_identity 99",
-    custom_format = fmt
-)
-cl
 ```
 
+Use `blast_help("blastn")` or run `system2("blastn", "-version")` to inspect
+the installed command-line program.
 
-```{r, include = FALSE, eval=run}
-## clean up
-unlink("16S_rRNA_DB", recursive = TRUE)
-```
+# Quick start: build and query a local database
 
-## Create a custom BLAST database
+The following example is self-contained. It uses five RNA sequences bundled
+with rBLAST and writes all generated files to a unique temporary directory.
 
-The `makeblastdb` utility can be used to create a BLAST database from a 
-FASTA file with sequences.
-The package provides an R interface function of the same name. As an example,
-we will create a searchable database from a sequence FASTA file shipped with the package. 
-
-```{r}
-seq <- readRNAStringSet(system.file("examples/RNA_example.fasta",
+```{r load-sequences}
+queries <- readRNAStringSet(system.file(
+    "examples/RNA_example.fasta",
     package = "rBLAST"
 ))
-seq
+queries
 ```
 
-First, we write a FASTA file that will be used by blast to create the database.
-```{r}
-writeXStringSet(seq, filepath = "seqs.fasta")
+First, write the sequences to FASTA and create a nucleotide database. RNA and
+DNA sequences both use `dbtype = "nucl"`.
+
+```{r create-database, eval = run_local}
+work_dir <- tempfile("rBLAST-vignette-")
+dir.create(work_dir)
+fasta <- file.path(work_dir, "sequences.fasta")
+db_path <- file.path(work_dir, "database")
+
+writeXStringSet(queries, fasta)
+makeblastdb(
+    fasta,
+    db_name = db_path,
+    dbtype = "nucl",
+    verbose = FALSE
+)
 ```
 
-Next, we create a BLAST database from the file. We need to specify that
-the sequences contains RNA and thus nucleotides.
-```{r, eval=run}
-makeblastdb("seqs.fasta", db_name = "db/small", dbtype = "nucl")
+`db_path` is the common prefix of the database files, not the name of one
+individual index file. Open that prefix with `blast()`:
+
+```{r open-database, eval = run_local}
+db <- blast(db_path, type = "blastn")
+print(db, info = FALSE)
 ```
 
-Note that it is convenient to specify a folder and a name separated by 
-a `/` to organize all index files in a folder. 
+Now search for a 100-nucleotide fragment taken from the first database
+sequence:
 
-We can now open the database and use it for queries.
-```{r, eval=run}
-db <- blast("db/small")
-db
+```{r search-fragment, eval = run_local}
+fragment <- subseq(queries[1], start = 101, end = 200)
+hits <- predict(db, fragment)
+hits
 ```
 
-Check if it finds a 100 nucleotide long fragment from the first sequence 
-in the training data.
+The most commonly used result columns are:
 
-```{r, eval=run}
-fragment <- subseq(seq[1], start = 101, end = 200)
-fragment
+| Column | Meaning |
+|:-------|:--------|
+| `qseqid`, `sseqid` | Query and database-sequence identifiers |
+| `pident` | Percentage of identical positions in the alignment |
+| `length` | Alignment length |
+| `qstart`, `qend` | Alignment coordinates in the query |
+| `sstart`, `send` | Alignment coordinates in the database sequence |
+| `evalue` | Expected number of chance matches; smaller is stronger |
+| `bitscore` | Normalized alignment score; larger is stronger |
 
-predict(db, fragment)
+In this example, `sseqid` identifies the sequence from which the fragment was
+taken, and `sstart` and `send` locate the fragment within that sequence.
+
+# Multiple queries and custom output
+
+An `XStringSet` can contain one or many query sequences. BLAST options are
+passed in command-line form through `BLAST_args`. Output fields are selected
+with space-separated BLAST field specifiers in `custom_format`:
+
+```{r multiple-queries, eval = run_local}
+selected_hits <- predict(
+    db,
+    queries[1:2],
+    BLAST_args = "-perc_identity 99",
+    custom_format = paste(
+        "qseqid sseqid pident length",
+        "qstart qend sstart send evalue bitscore"
+    )
+)
+selected_hits
 ```
 
-We see that the found sequence ID (`ssequid`) matches the query sequence ID
-(`qsequid`) and that it matches the correct region in the sequence 
-(see `sstart` and `send`).
+A successful search without matches returns a zero-row data frame. A failed
+BLAST command instead produces an R error containing the executable's exit
+status and the query and output paths.
 
-To permanently remove a database, the folder can be deleted.
-```{r}
-unlink("seqs.fasta")
-unlink("db", recursive = TRUE)
+# Threads and parallel searches
+
+Use BLAST's `-num_threads` option to parallelize one local search:
+
+```{r threads, eval = FALSE}
+hits <- predict(
+    db,
+    queries,
+    BLAST_args = "-num_threads 8"
+)
 ```
 
-# SessionInfo
+This differs from running several `predict()` calls concurrently. Each
+concurrent call creates its own query and output files and starts a separate
+BLAST process. Account for both levels of concurrency when choosing worker and
+thread counts; for example, 8 workers with 8 BLAST threads can request up to 64
+CPU threads.
 
-```{r}
+# Temporary files and troubleshooting
+
+By default, rBLAST removes a prediction's temporary FASTA and output files.
+Retain them for one diagnostic run with:
+
+```{r debugging}
+hits <- predict(
+    db,
+    queries[1],
+    verbose = TRUE,
+    keep_tmp = TRUE
+)
+
+list.files(tempdir())
+```
+
+`verbose = TRUE` prints the generated filenames and BLAST command.
+`keep_tmp = TRUE` leaves the files in `tempdir()` until they are manually
+removed or the R session ends. Repeated or parallel searches can retain large
+amounts of data, potentially exhausting temporary storage or a user quota.
+Use `keep_tmp = FALSE` for routine work.
+
+Common failures can be diagnosed as follows:
+
+- **Executable not found:** inspect `Sys.which(required_tools)` and correct
+  `PATH`.
+- **Database does not exist:** pass the common database prefix, **without** an
+  index extension such as `.nhr`, `.nin`, or `.nsq`.
+- **FASTA write error:** check available space, permissions, and
+  quotas for `tempdir()`.
+- **Nonzero BLAST exit status:** repeat one query with `verbose = TRUE` and
+  `keep_tmp = TRUE`, then inspect the printed command and retained files.
+- **Incomplete output:** first resolve any preceding FASTA or BLAST error;
+  parsing messages are often downstream symptoms of a failed command.
+
+On systems with a small `/tmp`, select a larger temporary filesystem before
+starting R:
+
+```{bash, eval = FALSE}
+TMPDIR=/path/with/space Rscript analysis.R
+```
+
+# Prebuilt NCBI databases
+
+`blast_db_get()` downloads and caches archives from the
+[NCBI BLAST database directory](https://ftp.ncbi.nlm.nih.gov/blast/db/).
+Because these archives can be large and require network access, this example is
+not executed while building the vignette:
+
+```{r prebuilt-database, eval = FALSE}
+archive <- blast_db_get("16S_ribosomal_RNA.tar.gz")
+database_dir <- "/path/to/16S_rRNA_DB"
+dir.create(database_dir, recursive = TRUE, showWarnings = FALSE)
+untar(archive, exdir = database_dir)
+
+ncbi_db <- blast(file.path(database_dir, "16S_ribosomal_RNA"))
+hits <- predict(ncbi_db, queries[1])
+```
+
+Large databases may be divided into numbered archives. Download and extract
+every part into the same directory. See the
+[BLAST command-line manual](https://www.ncbi.nlm.nih.gov/books/NBK279690/)
+for database layouts and search options.
+
+# Remote searches
+
+A BLAST object can refer to an NCBI database without downloading it:
+
+```{r remote-search, eval = FALSE}
+remote_db <- blast("nt", remote = TRUE, type = "blastn")
+remote_hits <- predict(remote_db, queries[1])
+```
+
+Remote searches use a shared NCBI service, may be queued, and are usually much
+slower than local searches. They also require network access. Prefer a local
+database for large or repeated analyses.
+
+```{r cleanup, include = FALSE, eval = run_local}
+unlink(work_dir, recursive = TRUE)
+```
+
+# Session information
+
+```{r session-info}
 sessionInfo()
 ```
