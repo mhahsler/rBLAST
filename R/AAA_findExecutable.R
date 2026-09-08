@@ -17,21 +17,24 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+# finds the path to any of the executable listed in exe and returns the
+# first one. Throws an error if interactive and non is found.
 .findExecutable <- function(exe, interactive = TRUE) {
     path <- Sys.which(exe)
-    if (all(path == "")) {
+    if (!any(nzchar(path))) {
         if (interactive) {
             stop(
                 "Executable for ",
                 paste(exe, collapse = " or "),
                 " not found!",
-                "Please make sure that the software is correctly installed",
-                "and, if necessary, path variables are set.",
+                " Please make sure that the software is correctly installed",
+                " and, if necessary, path variables are set.",
                 call. = FALSE
             )
         }
         return(character(0))
     }
 
-    path[which(path != "")[1]]
+    path[which(nzchar(path))[1]]
 }
+
