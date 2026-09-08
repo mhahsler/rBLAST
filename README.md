@@ -102,8 +102,9 @@ cl
     ## 3 9.2e-10       66
     ## 4 4.3e-08       60
 
-Examples can be found in the vignette [Searching Sequence Databases with
-rBLAST](https://mhahsler.r-universe.dev/articles/rBLAST/blast.html)
+Examples can be found in the vignette [rBLAST: R Interface for the Basic
+Local Alignment Search
+Tool.](https://mhahsler.r-universe.dev/articles/rBLAST/blast.html)
 
 ## Citation Request
 

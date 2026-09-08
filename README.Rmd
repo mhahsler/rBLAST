@@ -74,7 +74,7 @@ unlink("./16S_rRNA_DB", recursive = TRUE)
 ```
 
 Examples can be found in the vignette 
-[Searching Sequence Databases with rBLAST](https://mhahsler.r-universe.dev/articles/rBLAST/blast.html)
+[rBLAST: R Interface for the Basic Local Alignment Search Tool.](https://mhahsler.r-universe.dev/articles/rBLAST/blast.html)
 
 ## Citation Request
 
