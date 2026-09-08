@@ -173,7 +173,7 @@ blast <- function(db = NULL, remote = FALSE, type = "blastn") {
                          class = "BLAST"))
     }
 
-    db <- file.path(normalizePath(dirname(db)), basename(db))
+    db <- normalizePath(db, mustWork = FALSE)
     dbfiles <- Sys.glob(paste0(db, "*"))
     if (length(dbfiles) < 1) {
         stop("BLAST database does not exist! (tried to open: ", db, ")")
