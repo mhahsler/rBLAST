@@ -1,3 +1,15 @@
+rBLAST 1.9.1 (Development version)
+==============
+
+Changes:
+* Improved error handling in predict.BLAST(). Query FASTA files are now
+  checked after writing, and write failures report the affected file and the
+  underlying error.
+* BLAST exit statuses are now checked before parsing results. Nonzero exit
+  statuses and missing output files produce clear diagnostic messages with
+  the query and output locations.
+* Fixed blast_db_get() to honor the baseURL argument.
+
 rBLAST 1.1.2 (Release date: 2025-01-06)
 ==============
 
