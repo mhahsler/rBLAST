@@ -13,7 +13,8 @@ test_that("makeblastdb constructs command-line arguments", {
     )
 
     status <- makeblastdb(
-        "input.fasta", db_name = "db/example", dbtype = "prot",
+        "input.fasta",
+        db_name = "db/example", dbtype = "prot",
         hash_index = FALSE, args = "-parse_seqids", verbose = FALSE
     )
     expect_identical(status, 0L)

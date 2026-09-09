@@ -66,7 +66,8 @@ if (has_blast()) {
     writeXStringSet(seq, fasta)
 
     status <- makeblastdb(
-        fasta, db_name = db_path, dbtype = "nucl", verbose = FALSE
+        fasta,
+        db_name = db_path, dbtype = "nucl", verbose = FALSE
     )
     status
 

@@ -10,7 +10,7 @@ output:
     toc: true
 ---
 
-```{r, include = FALSE}
+```{r setup-internal, include = FALSE}
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>"
@@ -49,15 +49,15 @@ required_tools <- c("blastn", "makeblastdb", "blastdbcmd")
 Sys.which(required_tools)
 ```
 
-```{r include=FALSE}
+```{r check-tools-internal, include=FALSE}
 run_local <- has_blast()
 ```
 
 ```{r missing-blast-note, echo = FALSE, eval = !run_local, results = "asis"}
 cat(paste0(
     "**Note:** A complete local BLAST+ installation was not available when ",
-    "this vignette was built. The code is shown, but output from BLAST-dependent ",
-    "chunks is omitted.\n"
+    "this vignette was built. The code is shown, ",
+    "but output from BLAST-dependent chunks is omitted.\n"
 ))
 ```
 

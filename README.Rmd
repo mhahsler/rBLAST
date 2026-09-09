@@ -22,14 +22,14 @@ The BLAST software needs to be downloaded and installed separately.
 
 2. Install the latest version of the R package
     ```{r eval = FALSE}
-    if (!require("BiocManager", quietly = TRUE)) {
-        install.packages("BiocManager")
-    }
-    
-    # The following initializes usage of Bioc devel
-    BiocManager::install(version='devel')
-    
-    BiocManager::install("rBLAST")
+if (!require("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version = "devel")
+
+BiocManager::install("rBLAST")
     ```
 
 ## Usage

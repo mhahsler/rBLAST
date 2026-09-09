@@ -63,7 +63,8 @@
 #'     writeXStringSet(seq, fasta)
 #'
 #'     status <- makeblastdb(
-#'         fasta, db_name = db_path, dbtype = "nucl", verbose = FALSE
+#'         fasta,
+#'         db_name = db_path, dbtype = "nucl", verbose = FALSE
 #'     )
 #'     status
 #'
@@ -91,8 +92,9 @@ makeblastdb <- function(file, db_name = NULL, dbtype = "nucl",
         stdout = ifelse(verbose, "", FALSE)
     )
 
-    if(status)
-      stop("makeblastdb failed with a non-zero status: ", status)
+    if (status) {
+        stop("makeblastdb failed with a non-zero status: ", status)
+    }
 
     return(invisible(status))
 }

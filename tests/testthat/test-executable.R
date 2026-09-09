@@ -9,7 +9,8 @@ test_that(".findExecutable handles missing executables", {
     exe <- "rblast-command-that-does-not-exist"
 
     expect_equal(rBLAST:::.findExecutable(exe, interactive = FALSE), "",
-                 check.attributes = FALSE)
+        check.attributes = FALSE
+    )
     expect_error(
         rBLAST:::.findExecutable(exe),
         "Executable for rblast-command-that-does-not-exist not found"

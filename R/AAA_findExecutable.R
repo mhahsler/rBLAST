@@ -37,4 +37,3 @@
 
     path[which(nzchar(path))[1]]
 }
-

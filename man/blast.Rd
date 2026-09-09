@@ -146,10 +146,10 @@ Sys.which(c("blastn", "makeblastdb", "blastdbcmd"))
 
 ## Build and query a small local database (only if BLAST is installed).
 if (has_blast()) {
-
     ## Create a BLAST DB
     seq <- readRNAStringSet(system.file(
-        "examples/RNA_example.fasta", package = "rBLAST"
+        "examples/RNA_example.fasta",
+        package = "rBLAST"
     ))
     work_dir <- tempfile("rBLAST-example-")
     dir.create(work_dir)

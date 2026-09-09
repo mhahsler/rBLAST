@@ -48,8 +48,9 @@
 
 #' @author Michael Hahsler
 #' @examples
-#' \dontrun{
-#' ## Download or retrieve an existing cached copy (this will take a little).
+#' \donttest{
+#' ## Download or retrieve an existing cached copy
+#' ##   (downloading ~70MB will take a little).
 #' blast_db_get("16S_ribosomal_RNA.tar.gz")
 #'
 #' ## Extract the chached archive, then open the database using its prefix.
@@ -58,11 +59,11 @@
 #' untar(blast_db_get("16S_ribosomal_RNA.tar.gz"), exdir = db_dir)
 #' db <- blast(file.path(db_dir, "16S_ribosomal_RNA"))
 #' db
+#' }
 #'
 #' ## Inspect the underlying cache with BiocFileCache functions.
 #' cache <- blast_db_cache()
 #' BiocFileCache::bfcinfo(cache)
-#' }
 #' @export
 blast_db_cache <-
     function() {
@@ -89,13 +90,16 @@ blast_db_get <-
         }
 
         if (check_update && !isFALSE(BiocFileCache::bfcneedsupdate(bfc, rid))) {
-            if (verbose)
-                message("Downloading latest version of ", file, " from ",
-                        baseURL)
+            if (verbose) {
+                message(
+                    "Downloading latest version of ", file, " from ",
+                    baseURL
+                )
+            }
             BiocFileCache::bfcdownload(bfc, rid)
-        } else
-            if (verbose)
-                message("Returning local copy of ", file)
+        } else if (verbose) {
+            message("Returning local copy of ", file)
+        }
 
         BiocFileCache::bfcrpath(bfc, rids = rid)
     }

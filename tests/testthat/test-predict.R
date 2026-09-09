@@ -14,8 +14,9 @@ blast_output_writer <- function(lines, calls = NULL, status = 0L) {
             calls$args <- args
         }
         outfile <- args[match("-out", args) + 1L]
-        if (!is.null(lines))
+        if (!is.null(lines)) {
             writeLines(lines, outfile)
+        }
         status
     }
 }
@@ -97,7 +98,8 @@ test_that("predict.BLAST builds remote commands and reports progress", {
     expect_true("-remote" %in% calls$args)
     expect_true(any(grepl("Starting BLAST", output, fixed = TRUE)))
     expect_true(any(grepl(
-        "number of lines in results file: 0", output, fixed = TRUE
+        "number of lines in results file: 0", output,
+        fixed = TRUE
     )))
     expect_equal(nrow(result), 0L)
 

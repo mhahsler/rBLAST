@@ -14,7 +14,8 @@ test_that("makeblastdb, blast, and predict work together", {
 
     expect_identical(
         makeblastdb(
-            fasta, db_name = db_path, dbtype = "nucl", verbose = FALSE
+            fasta,
+            db_name = db_path, dbtype = "nucl", verbose = FALSE
         ),
         0L
     )

@@ -129,10 +129,10 @@
 #'
 #' ## Build and query a small local database (only if BLAST is installed).
 #' if (has_blast()) {
-#'
 #'     ## Create a BLAST DB
 #'     seq <- readRNAStringSet(system.file(
-#'         "examples/RNA_example.fasta", package = "rBLAST"
+#'         "examples/RNA_example.fasta",
+#'         package = "rBLAST"
 #'     ))
 #'     work_dir <- tempfile("rBLAST-example-")
 #'     dir.create(work_dir)
@@ -170,7 +170,8 @@ blast <- function(db = NULL, remote = FALSE, type = "blastn") {
 
     if (remote) {
         return(structure(list(db = db, type = type, remote = TRUE),
-                         class = "BLAST"))
+            class = "BLAST"
+        ))
     }
 
     db <- normalizePath(db, mustWork = FALSE)
@@ -392,9 +393,9 @@ predict.BLAST <-
 
         cl_tab <-
             read.table(outfile,
-                       sep = "@",
-                       quote = "",
-                       col.names = c_names
+                sep = "@",
+                quote = "",
+                col.names = c_names
             )
 
 
@@ -409,7 +410,9 @@ predict.BLAST <-
 #' @export
 has_blast <- function() {
     exes <- c("blastn", "makeblastdb", "blastdbcmd")
-    paths <- sapply(exes, FUN = .findExecutable, interactive = FALSE)
+    paths <- vapply(exes,
+        FUN = .findExecutable, FUN.VALUE = character(1L),
+        interactive = FALSE
+    )
     all(nzchar(paths))
 }
-
