@@ -134,6 +134,9 @@ selected BLAST+ program, and parses delimiter-separated tabular output. A
 FASTA write failure, a nonzero BLAST exit status, or a missing output file
 produces an error before result parsing. Use \code{verbose = TRUE} together with
 \code{keep_tmp = TRUE} when diagnosing a failed command.
+If the suggested package \code{data.table} is installed, output is read with
+\code{\link[data.table:fread]{data.table::fread()}} for improved performance; otherwise, \code{utils::read.table()}
+is used automatically.
 
 BLAST's own multithreading is controlled with the \code{-num_threads} option in
 \code{BLAST_args}. This is distinct from running several \code{predict()} calls in

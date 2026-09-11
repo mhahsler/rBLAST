@@ -4,8 +4,8 @@ Description: Seamlessly interfaces the Basic Local Alignment Search Tool
   (BLAST) running locally to search genetic sequence data bases. This work was partially 
   supported by grant no. R21HG005912 from the National Human 
   Genome Research Institute.
-Version: 1.9.3
-Date: 2026-09-09
+Version: 1.9.4
+Date: 2026-xx-xx
 Authors@R: c(person("Michael", "Hahsler",
                 role = c("aut", "cre"),
                 email = "mhahsler@lyle.smu.edu",
@@ -15,7 +15,7 @@ Authors@R: c(person("Michael", "Hahsler",
 biocViews: Genetics, Sequencing, SequenceMatching, Alignment, MultipleSequenceAlignment, DataImport
 Depends: Biostrings (>= 2.26.2)
 Imports: methods, utils, BiocFileCache
-Suggests: knitr, rmarkdown, testthat, withr
+Suggests: data.table, knitr, rmarkdown, testthat, withr
 URL: https://github.com/mhahsler/rBLAST
 BugReports: https://github.com/mhahsler/rBLAST/issues
 SystemRequirements: ncbi-blast+

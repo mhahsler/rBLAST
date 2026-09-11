@@ -63,6 +63,39 @@ test_that("predict.BLAST parses default and custom output formats", {
     expect_equal(custom$pident, 100)
 })
 
+test_that("data.table and base parsers return the same results", {
+    skip_if_not_installed("data.table")
+
+    query <- Biostrings::DNAStringSet(c(q1 = "ACGTACGTACGT"))
+    lines <- c(
+        paste(
+            c("q1", "s1", 100, 12, 0, 0, 1, 12, 5, 16, "1e-10", 42),
+            collapse = "@"
+        ),
+        paste(
+            c("q1", "s2", 91.7, 12, 1, 0, 1, 12, 20, 9, "2e-04", 31.5),
+            collapse = "@"
+        )
+    )
+    local_mocked_bindings(
+        .findExecutable = function(...) "/mock/blastn",
+        .package = "rBLAST"
+    )
+    local_mocked_bindings(
+        system2 = blast_output_writer(lines),
+        .package = "base"
+    )
+
+    data_table_result <- predict(blast_test_object(), query)
+    base_result <- with_mocked_bindings(
+        predict(blast_test_object(), query),
+        requireNamespace = function(package, quietly = FALSE) FALSE,
+        .package = "base"
+    )
+
+    expect_identical(data_table_result, base_result)
+})
+
 test_that("predict.BLAST handles searches without hits", {
     query <- Biostrings::DNAStringSet(c(q1 = "ACGTACGTACGT"))
     local_mocked_bindings(

@@ -1,4 +1,4 @@
-rBLAST 1.9.3 (Release candidate)
+rBLAST 1.9.4 (Release candidate)
 ==============
 
 Changes:
@@ -8,6 +8,9 @@ Changes:
 * BLAST exit status is now checked before parsing results. Nonzero exit
   status and missing output files produce clear diagnostic messages with
   the query and output locations.
+* predict.BLAST() now uses data.table::fread() for faster result parsing when
+  the suggested data.table package is installed, with an automatic fallback
+  to utils::read.table().
 * Fixed blast_db_get() to honor the baseURL argument.
 
 rBLAST 1.1.2 (Release date: 2025-01-06)

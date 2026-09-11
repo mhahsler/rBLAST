@@ -112,6 +112,9 @@
 #' FASTA write failure, a nonzero BLAST exit status, or a missing output file
 #' produces an error before result parsing. Use `verbose = TRUE` together with
 #' `keep_tmp = TRUE` when diagnosing a failed command.
+#' If the suggested package `data.table` is installed, output is read with
+#' [data.table::fread()] for improved performance; otherwise, `utils::read.table()`
+#' is used automatically.
 #'
 #' BLAST's own multithreading is controlled with the `-num_threads` option in
 #' `BLAST_args`. This is distinct from running several `predict()` calls in
@@ -391,13 +394,22 @@ predict.BLAST <-
             return(data.frame(matrix(ncol = length(c_names), nrow = 0)))
         }
 
-        cl_tab <-
-            read.table(outfile,
+        if (requireNamespace("data.table", quietly = TRUE)) {
+            cl_tab <- data.table::fread(outfile,
+                header = FALSE,
+                sep = "@",
+                quote = "",
+                col.names = c_names,
+                data.table = FALSE,
+                showProgress = FALSE
+            )
+        } else {
+            cl_tab <- read.table(outfile,
                 sep = "@",
                 quote = "",
                 col.names = c_names
             )
-
+        }
 
         if (verbose) {
             cat(" * found", nrow(cl_tab), "matches.\n")
